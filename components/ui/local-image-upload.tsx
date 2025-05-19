@@ -69,8 +69,25 @@ export function LocalImageUpload({
       // Set the URL
       const imageUrl = responseData.url
       console.log('Image uploaded successfully:', imageUrl)
-      onChange(imageUrl)
-      setPreview(imageUrl)
+
+      // Create a direct API URL for the image
+      const apiImageUrl = imageUrl.replace('/uploads/', '/api/image/');
+      console.log('API image URL:', apiImageUrl);
+
+      // Pre-load the image to verify it works
+      const img = new Image();
+      img.onload = () => {
+        console.log('Image pre-loaded successfully');
+        // Use the original URL for storage but display through API
+        onChange(imageUrl);
+        setPreview(apiImageUrl);
+      };
+      img.onerror = () => {
+        console.error('Failed to pre-load image, falling back to direct URL');
+        onChange(imageUrl);
+        setPreview(imageUrl);
+      };
+      img.src = apiImageUrl;
     } catch (error: any) {
       console.error("Error uploading image:", error.message)
       setUploadError(error.message || "حدث خطأ أثناء رفع الصورة")
@@ -101,8 +118,31 @@ export function LocalImageUpload({
               className="absolute inset-0 w-full h-full object-cover"
               onError={(e) => {
                 console.error(`Error loading image: ${preview}`);
-                e.currentTarget.src = '/placeholder-image.jpg'; // Fallback image
+                // Try to load the image through our API route
+                let apiPath;
+                if (preview.startsWith('/uploads/')) {
+                  // Convert /uploads/blog/file.jpg to /api/image/blog/file.jpg
+                  apiPath = `/api/image/${preview.replace('/uploads/', '')}?t=${Date.now()}`;
+                } else if (preview.startsWith('/api/image/')) {
+                  // Already using API path, just add cache busting
+                  apiPath = `${preview}?t=${Date.now()}`;
+                } else {
+                  // Direct path with origin
+                  apiPath = `${window.location.origin}${preview}?t=${Date.now()}`;
+                }
+
+                console.log('Trying API path:', apiPath);
+
+                // Set a fallback color
+                e.currentTarget.style.backgroundColor = '#f0f0f0';
+                e.currentTarget.style.display = 'flex';
+                e.currentTarget.style.alignItems = 'center';
+                e.currentTarget.style.justifyContent = 'center';
+
+                // Try again with the API path
+                e.currentTarget.src = apiPath;
               }}
+              style={{ background: '#f0f0f0' }} // Light gray background as fallback
             />
             <Button
               type="button"

@@ -81,7 +81,17 @@ export function ServicesTable({ services }: { services: Service[] }) {
                   <TableCell>
                     {service.image ? (
                       <div className="relative h-10 w-10 rounded overflow-hidden">
-                        <img src={service.image} alt={service.title} className="object-cover h-full w-full" />
+                        <img
+                          src={service.image.startsWith('/uploads/')
+                            ? `/api/image/${service.image.replace('/uploads/', '')}?t=${Date.now()}`
+                            : service.image}
+                          alt={service.title}
+                          className="object-cover h-full w-full"
+                          onError={(e) => {
+                            console.error(`Error loading thumbnail: ${service.image}`);
+                            e.currentTarget.style.backgroundColor = '#f0f0f0';
+                          }}
+                        />
                       </div>
                     ) : (
                       <span className="text-gray-400">-</span>

@@ -39,8 +39,10 @@ export function StorageImage({
 
         // Check if it's a local upload path (starts with /uploads/)
         if (src.startsWith('/uploads/')) {
-          // It's a local file path, use it directly
-          setImgSrc(src)
+          // Convert to API route for better reliability
+          const apiPath = `/api/image/${src.replace('/uploads/', '')}?t=${Date.now()}`;
+          console.log('Using API path for image:', apiPath);
+          setImgSrc(apiPath)
           setLoading(false)
           return
         }

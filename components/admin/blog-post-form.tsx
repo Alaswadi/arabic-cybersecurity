@@ -155,14 +155,21 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
             value={featuredImage}
             onChange={(url) => {
               console.log("Blog image URL updated:", url);
+
+              // Store the original URL in the form data
               setFeaturedImage(url);
 
               // Validate the image URL by trying to load it
               if (url) {
+                // Try to load through the API route for better reliability
+                const apiUrl = url.startsWith('/uploads/')
+                  ? `/api/image/${url.replace('/uploads/', '')}`
+                  : url;
+
                 const img = new Image();
-                img.onload = () => console.log("Blog image loaded successfully:", url);
-                img.onerror = () => console.error("Failed to load blog image:", url);
-                img.src = url;
+                img.onload = () => console.log("Blog image loaded successfully:", apiUrl);
+                img.onerror = () => console.error("Failed to load blog image:", apiUrl);
+                img.src = apiUrl;
               }
             }}
             label="الصورة الرئيسية"

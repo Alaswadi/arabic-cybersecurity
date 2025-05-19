@@ -26,8 +26,9 @@ const nextConfig = {
   reactStrictMode: true,
   // Add experimental features for better compatibility
   experimental: {
-    // Increase the timeout for page generation
-    pageGenerationTimeout: 180,
+    // Next.js doesn't support pageGenerationTimeout anymore
+    // Using the correct property for timeouts
+    staticGenerationTimeout: 180,
   },
 }
 

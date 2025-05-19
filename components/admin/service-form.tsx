@@ -154,15 +154,22 @@ export function ServiceForm({ service }: { service?: Service }) {
           <LocalImageUpload
             value={image}
             onChange={(url) => {
-              console.log("Image URL updated:", url);
+              console.log("Service image URL updated:", url);
+
+              // Store the original URL in the form data
               setImage(url);
 
               // Validate the image URL by trying to load it
               if (url) {
+                // Try to load through the API route for better reliability
+                const apiUrl = url.startsWith('/uploads/')
+                  ? `/api/image/${url.replace('/uploads/', '')}`
+                  : url;
+
                 const img = new Image();
-                img.onload = () => console.log("Image loaded successfully:", url);
-                img.onerror = () => console.error("Failed to load image:", url);
-                img.src = url;
+                img.onload = () => console.log("Service image loaded successfully:", apiUrl);
+                img.onerror = () => console.error("Failed to load service image:", apiUrl);
+                img.src = apiUrl;
               }
             }}
             label="صورة الخدمة"

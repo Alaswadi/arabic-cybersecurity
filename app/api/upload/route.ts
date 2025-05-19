@@ -68,14 +68,38 @@ export async function POST(request: NextRequest) {
       console.log(`Created directory: ${uploadDir}`)
     }
 
+    // Log file details for debugging
+    console.log('File details:', {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified
+    });
+
     // Convert the file to a Buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
+    // Log buffer size for debugging
+    console.log(`Buffer size: ${buffer.length} bytes`);
+
     // Write the file to disk
     try {
+      // Ensure the directory exists with proper permissions
+      await mkdir(uploadDir, { recursive: true, mode: 0o755 })
+
+      // Write the file with explicit permissions
       await writeFile(filePath, buffer)
       console.log(`File written successfully to: ${filePath}`)
+
+      // Double-check if the file exists and has content
+      const fs = require('fs');
+      const stats = fs.statSync(filePath);
+      console.log(`File stats: size=${stats.size}, mode=${stats.mode.toString(8)}`);
+
+      if (stats.size === 0) {
+        throw new Error('File was created but has zero bytes');
+      }
     } catch (writeError) {
       console.error('Error writing file:', writeError)
       return NextResponse.json(
