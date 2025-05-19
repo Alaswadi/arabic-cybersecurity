@@ -9,8 +9,8 @@ build
 .git
 .gitignore
 
-# Exclude admin pages during build
-app/admin
+# Include admin pages for dynamic rendering
+# app/admin
 
 # Exclude development files
 .env.local

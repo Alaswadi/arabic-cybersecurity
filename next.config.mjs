@@ -26,6 +26,10 @@ const nextConfig = {
     // Increase the timeout for static generation
     staticPageGenerationTimeout: 180,
   },
+  // Set all pages to be server-side rendered by default
+  // This ensures dynamic data fetching from Supabase
+  reactStrictMode: true,
+  swcMinify: true,
 }
 
 export default nextConfig

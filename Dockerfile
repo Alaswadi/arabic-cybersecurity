@@ -18,22 +18,25 @@ COPY . .
 
 # Create a .env.local file with environment variables
 RUN echo "NEXT_PUBLIC_SUPABASE_URL=https://xahxjhzngahtcuekbpnj.supabase.co" > .env.local && \
-    echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhaHhqaHpuZ2FodGN1ZWticG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NTI3NzcsImV4cCI6MjAzMTUyODc3N30.Nh8yCZtYJJnRBLGnB9LUqhBpkLhqDMpJgBpQk_aVwYM" >> .env.local
+    echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhaHhqaHpuZ2FodGN1ZWticG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NTI3NzcsImV4cCI6MjAzMTUyODc3N30.Nh8yCZtYJJnRBLGnB9LUqhBpkLhqDMpJgBpQk_aVwYM" >> .env.local && \
+    echo "NEXT_FORCE_DYNAMIC=1" >> .env.local
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_PUBLIC_SUPABASE_URL=https://xahxjhzngahtcuekbpnj.supabase.co
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhaHhqaHpuZ2FodGN1ZWticG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NTI3NzcsImV4cCI6MjAzMTUyODc3N30.Nh8yCZtYJJnRBLGnB9LUqhBpkLhqDMpJgBpQk_aVwYM
+# Force dynamic rendering
+ENV NEXT_FORCE_DYNAMIC=1
 
 # Create uploads directories
 RUN mkdir -p public/uploads/blog public/uploads/services && \
     chmod -R 755 public/uploads
 
-# Build the application
-RUN pnpm build:next
+# Build the application with dynamic rendering
+RUN NEXT_FORCE_DYNAMIC=1 pnpm build
 
 # Expose the port the app will run on
 EXPOSE 3000
 
-# Start the application
-CMD ["node_modules/.bin/next", "start"]
+# Start the application with dynamic rendering
+CMD ["sh", "-c", "NEXT_FORCE_DYNAMIC=1 node_modules/.bin/next start"]

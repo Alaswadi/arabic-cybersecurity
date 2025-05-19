@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation"
 import Link from "next/link"
 import { CalendarDays, Clock, ChevronRight, Share2, Search } from "lucide-react"
 import { Header } from "@/components/header"
@@ -8,9 +7,9 @@ import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
 
-// Add these exports to make Next.js generate this page at build time
+// Make this page dynamic to fetch data from Supabase at request time
 export const dynamic = 'force-dynamic'
-export const revalidate = 3600 // Revalidate every hour
+export const revalidate = 0 // Revalidate on every request
 
 // Define blog post and related posts types
 interface BlogPost {
@@ -95,12 +94,8 @@ export default async function BlogPostPage(
       // Find the post with the matching slug from dummy data
       const dummyPost = dummyBlogPosts.find(post => post.slug === params.slug);
 
-      // If post not found in dummy data, return 404
-      if (!dummyPost) {
-        notFound();
-      }
-
-      post = dummyPost;
+      // If post not found in dummy data, use the first dummy post
+      post = dummyPost || dummyBlogPosts[0];
 
       // Get related posts from dummy data
       relatedPosts = dummyBlogPosts

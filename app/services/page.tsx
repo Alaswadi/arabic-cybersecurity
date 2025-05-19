@@ -10,9 +10,9 @@ import { NavButton } from "@/components/ui/nav-button"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
 
-// Add these exports to make Next.js generate this page at build time
-export const dynamic = 'force-static'
-export const revalidate = 3600 // Revalidate every hour
+// Make this page dynamic to fetch data from Supabase at request time
+export const dynamic = 'force-dynamic'
+export const revalidate = 0 // Revalidate on every request
 
 // Map icon strings to Lucide React components
 const iconMap: Record<string, React.ReactElement<any>> = {
