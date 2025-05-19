@@ -1,0 +1,18 @@
+# Disable directory listing
+Options -Indexes
+
+# Handle Next.js routing
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # Redirect to HTTPS if not already
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  
+  # If the request is not for a file or directory that exists
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # Rewrite all requests to the Next.js server
+  RewriteRule ^(.*)$ /server.js [L]
+</IfModule>
