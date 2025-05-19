@@ -6,6 +6,9 @@ import { AuthProvider } from "@/components/auth-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { usePathname } from "next/navigation"
 
+// Import the config to apply dynamic rendering to all admin pages
+import "./config"
+
 export default function AdminLayout({
   children,
 }: {
