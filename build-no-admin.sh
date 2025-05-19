@@ -9,10 +9,14 @@ echo "NEXT_FORCE_DYNAMIC=1" >> .env.local
 
 # Backup admin directory
 echo "Backing up admin directory..."
-mkdir -p /tmp/admin-backup
-cp -r app/admin /tmp/admin-backup
-rm -rf app/admin
-echo "Admin directory backed up to /tmp/admin-backup"
+if [ -d "app/admin" ]; then
+  mkdir -p /tmp/admin-backup
+  cp -r app/admin /tmp/admin-backup
+  rm -rf app/admin
+  echo "Admin directory backed up to /tmp/admin-backup"
+else
+  echo "Admin directory not found, skipping backup"
+fi
 
 # Build the application
 echo "Building the application..."
@@ -20,8 +24,12 @@ NEXT_FORCE_DYNAMIC=1 NEXT_PUBLIC_SUPABASE_URL=https://xahxjhzngahtcuekbpnj.supab
 
 # Restore admin directory
 echo "Restoring admin directory..."
-mkdir -p app/admin
-cp -r /tmp/admin-backup/admin/* app/admin/
-echo "Admin directory restored from /tmp/admin-backup"
+if [ -d "/tmp/admin-backup/admin" ]; then
+  mkdir -p app/admin
+  cp -r /tmp/admin-backup/admin/* app/admin/
+  echo "Admin directory restored from /tmp/admin-backup"
+else
+  echo "Admin backup not found, skipping restore"
+fi
 
 echo "Build completed successfully!"

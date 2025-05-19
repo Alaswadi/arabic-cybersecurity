@@ -16,8 +16,8 @@ RUN pnpm install
 # Copy the rest of the application
 COPY . .
 
-# Make scripts executable
-RUN chmod +x exclude-admin.sh restore-admin.sh
+# Make all scripts executable
+RUN chmod +x *.sh
 
 # Create a .env.local file with environment variables
 RUN echo "NEXT_PUBLIC_SUPABASE_URL=https://xahxjhzngahtcuekbpnj.supabase.co" > .env.local && \
@@ -36,10 +36,10 @@ RUN mkdir -p public/uploads/blog public/uploads/services && \
     chmod -R 755 public/uploads
 
 # Build the application without admin pages
-RUN ./build-no-admin.sh
+RUN node direct-build.js
 
 # Expose the port the app will run on
 EXPOSE 3000
 
 # Start the application with dynamic rendering
-CMD ["./start.sh"]
+CMD ["node", "direct-start.js"]
