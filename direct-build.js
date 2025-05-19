@@ -30,25 +30,30 @@ if (!fs.existsSync(servicesUploadsDir)) {
   fs.mkdirSync(servicesUploadsDir, { recursive: true });
 }
 
-// Backup admin directory
-console.log('Backing up admin directory...');
+// We're no longer removing the admin directory
+// Instead, we'll ensure it's properly configured for dynamic rendering
+console.log('Configuring admin directory for dynamic rendering...');
 const adminDir = path.join('app', 'admin');
-const adminBackupDir = path.join('/tmp', 'admin-backup');
+const adminConfigFile = path.join(adminDir, 'config.ts');
 
 if (fs.existsSync(adminDir)) {
-  if (!fs.existsSync(adminBackupDir)) {
-    fs.mkdirSync(adminBackupDir, { recursive: true });
-  }
+  // Make sure the admin config file exists and has the right content
+  const configContent = `// This file contains configuration for the admin pages
 
-  // Copy admin directory to backup
-  execSync(`cp -r ${adminDir} ${adminBackupDir}`);
+// Set dynamic to force-dynamic to prevent static generation
+export const dynamic = 'force-dynamic'
 
-  // Remove admin directory
-  execSync(`rm -rf ${adminDir}`);
+// Skip prerendering for admin pages
+export const generateStaticParams = () => {
+  return []
+}
+`;
 
-  console.log('Admin directory backed up to /tmp/admin-backup');
+  // Write or update the config file
+  fs.writeFileSync(adminConfigFile, configContent);
+  console.log('Admin directory configured for dynamic rendering');
 } else {
-  console.log('Admin directory not found, skipping backup');
+  console.log('Admin directory not found, skipping configuration');
 }
 
 // Build the application
@@ -69,22 +74,7 @@ try {
   process.exit(1);
 }
 
-// Restore admin directory
-console.log('Restoring admin directory...');
-const adminBackupSrcDir = path.join(adminBackupDir, 'admin');
-
-if (fs.existsSync(adminBackupSrcDir)) {
-  // Create admin directory
-  if (!fs.existsSync(adminDir)) {
-    fs.mkdirSync(adminDir, { recursive: true });
-  }
-
-  // Copy admin directory from backup
-  execSync(`cp -r ${adminBackupSrcDir}/* ${adminDir}`);
-
-  console.log('Admin directory restored from /tmp/admin-backup');
-} else {
-  console.log('Admin backup not found, skipping restore');
-}
+// No need to restore admin directory since we're not removing it anymore
+console.log('Admin directory was preserved during build');
 
 console.log('Build completed successfully!');

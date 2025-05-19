@@ -35,7 +35,11 @@ ENV NEXT_FORCE_DYNAMIC=1
 RUN mkdir -p public/uploads/blog public/uploads/services && \
     chmod -R 755 public/uploads
 
-# Build the application without admin pages
+# Make sure admin directory exists and is properly configured
+RUN mkdir -p app/admin && \
+    echo "export const dynamic = 'force-dynamic'; export const generateStaticParams = () => { return [] };" > app/admin/config.ts
+
+# Build the application with admin pages included
 RUN node direct-build.js
 
 # Expose the port the app will run on
