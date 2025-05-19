@@ -181,11 +181,20 @@ export default async function ServiceDetailPage(
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                 {service.image && (
                   <div className="relative h-64 w-full">
-                    <StorageImage
-                      src={service.image}
+                    <img
+                      src={service.image.startsWith('/uploads/')
+                        ? `/api/image/${service.image.replace('/uploads/', '')}?t=${Date.now()}`
+                        : service.image}
                       alt={service.title}
-                      fill
-                      className="object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error(`Error loading service detail image: ${service.image}`);
+                        e.currentTarget.style.backgroundColor = '#f0f0f0';
+                        // Try direct path as fallback
+                        if (service.image.startsWith('/uploads/')) {
+                          e.currentTarget.src = service.image + '?t=' + Date.now();
+                        }
+                      }}
                     />
                   </div>
                 )}

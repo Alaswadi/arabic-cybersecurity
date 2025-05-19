@@ -90,6 +90,10 @@ export function ServicesTable({ services }: { services: Service[] }) {
                           onError={(e) => {
                             console.error(`Error loading thumbnail: ${service.image}`);
                             e.currentTarget.style.backgroundColor = '#f0f0f0';
+                            // Try direct path as fallback
+                            if (service.image.startsWith('/uploads/')) {
+                              e.currentTarget.src = service.image + '?t=' + Date.now();
+                            }
                           }}
                         />
                       </div>

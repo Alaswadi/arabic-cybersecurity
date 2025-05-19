@@ -1,20 +1,27 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image, { ImageProps } from "next/image"
-import { transformStorageUrl } from "@/lib/supabase/storage-url"
 import { createClient } from "@/lib/supabase/client"
 
-interface StorageImageProps extends Omit<ImageProps, 'src'> {
+// Define our own props instead of extending ImageProps
+interface StorageImageProps {
   src: string
+  alt: string
   fallbackSrc?: string
+  fill?: boolean
+  className?: string
+  width?: number
+  height?: number
 }
 
 export function StorageImage({
   src,
   fallbackSrc = "/placeholder.svg",
   alt,
-  ...props
+  fill,
+  className,
+  width,
+  height,
 }: StorageImageProps) {
   const [imgSrc, setImgSrc] = useState<string>(fallbackSrc)
   const [error, setError] = useState<boolean>(false)
@@ -106,16 +113,37 @@ export function StorageImage({
     setImgSrc(fallbackSrc)
   }
 
+  // Prepare style for fill mode
+  const fillStyle = fill ? {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    objectPosition: 'center',
+  } as React.CSSProperties : {};
+
+  // Combine styles
+  const imgStyle = {
+    ...fillStyle,
+  };
+
   return (
     <>
       {loading ? (
         <div className="animate-pulse bg-gray-200 w-full h-full" />
       ) : (
-        <Image
-          {...props}
+        <img
           src={error ? fallbackSrc : imgSrc}
           alt={alt}
           onError={handleError}
+          className={className}
+          width={width}
+          height={height}
+          style={imgStyle}
         />
       )}
     </>
