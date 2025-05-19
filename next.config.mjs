@@ -19,6 +19,13 @@ const nextConfig = {
     });
     return config;
   },
+  // Add experimental features for better compatibility
+  experimental: {
+    // This helps with Supabase data fetching during build
+    serverComponentsExternalPackages: ['@supabase/supabase-js'],
+    // Increase the timeout for static generation
+    staticPageGenerationTimeout: 180,
+  },
 }
 
 export default nextConfig

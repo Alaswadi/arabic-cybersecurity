@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
 
+// Add these exports to make Next.js generate this page at build time
+export const dynamic = 'force-static'
 export const revalidate = 3600 // Revalidate every hour
 
 // Default blog posts in case Supabase fetch fails
@@ -37,23 +39,25 @@ const defaultBlogPosts = [
 ]
 
 export default async function BlogPage() {
-  const supabase = createClient()
+  // Initialize with default blog posts
+  let blogPosts = defaultBlogPosts;
 
-  // Fetch blog posts from Supabase
-  const { data: blogPostsData, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("published", true as any) // Type assertion to avoid TypeScript error
-    .order("published_at", { ascending: false })
+  try {
+    const supabase = createClient()
 
-  // Log any errors for debugging
-  if (error) {
-    console.error("Error fetching blog posts:", error)
-  }
+    // Fetch blog posts from Supabase
+    const { data: blogPostsData, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("published", true as any) // Type assertion to avoid TypeScript error
+      .order("published_at", { ascending: false })
 
-  // Transform Supabase data to match our component needs
-  const blogPosts = blogPostsData && blogPostsData.length > 0
-    ? blogPostsData.map((post: any) => ({
+    // Log any errors for debugging
+    if (error) {
+      console.error("Error fetching blog posts:", error)
+    } else if (blogPostsData && blogPostsData.length > 0) {
+      // Transform Supabase data to match our component needs
+      blogPosts = blogPostsData.map((post: any) => ({
         title: post.title || "عنوان المقال",
         excerpt: post.excerpt || (post.content ? post.content.substring(0, 150) + "..." : ""),
         image: post.featured_image || "/placeholder-blog-1.jpg",
@@ -68,7 +72,12 @@ export default async function BlogPage() {
         slug: post.slug || "blog-post",
         featured: false, // Set the first one as featured later
       }))
-    : defaultBlogPosts
+    }
+  } catch (error) {
+    // Handle any unexpected errors
+    console.error("Unexpected error fetching blog posts:", error)
+    // Use default blog posts in case of error
+  }
 
   // Set the first post as featured if we have posts
   if (blogPosts.length > 0) {

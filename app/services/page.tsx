@@ -10,6 +10,10 @@ import { NavButton } from "@/components/ui/nav-button"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
 
+// Add these exports to make Next.js generate this page at build time
+export const dynamic = 'force-static'
+export const revalidate = 3600 // Revalidate every hour
+
 // Map icon strings to Lucide React components
 const iconMap: Record<string, React.ReactElement<any>> = {
   Shield: <Shield className="h-16 w-16 text-purple-600" />,
@@ -62,24 +66,26 @@ const defaultServices = [
 ]
 
 export default async function ServicesPage() {
-  const supabase = createClient()
+  // Create Supabase client with error handling
+  let services = defaultServices;
 
-  // Fetch services from Supabase
-  const { data: servicesData, error } = await supabase
-    .from("services")
-    .select("*")
-    .order("created_at", { ascending: false })
+  try {
+    const supabase = createClient()
 
-  // Log any errors for debugging
-  if (error) {
-    console.error("Error fetching services:", error)
-  }
+    // Fetch services from Supabase
+    const { data: servicesData, error } = await supabase
+      .from("services")
+      .select("*")
+      .order("created_at", { ascending: false })
 
-  // Transform Supabase data to match our component needs
-  const services = servicesData && servicesData.length > 0
-    ? servicesData.map(service => ({
+    // Log any errors for debugging
+    if (error) {
+      console.error("Error fetching services:", error)
+    } else if (servicesData && servicesData.length > 0) {
+      // Transform Supabase data to match our component needs
+      services = servicesData.map(service => ({
         id: service.id,
-        icon: service.icon,
+        icon: service.icon || "Shield", // Provide default icon
         title: service.title,
         description: service.description,
         image: service.image,
@@ -87,7 +93,13 @@ export default async function ServicesPage() {
         href: `/services/${service.id}`,
         featured: false, // Set the first one as featured later
       }))
-    : defaultServices
+    }
+  } catch (error) {
+    // Handle any unexpected errors
+    console.error("Unexpected error fetching services:", error)
+    // Use default services in case of error
+    services = defaultServices
+  }
 
   // Set the first service as featured if we have services
   if (services.length > 0) {

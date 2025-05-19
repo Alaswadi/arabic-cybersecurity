@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
 
+// Add these exports to make Next.js generate this page at build time
+export const dynamic = 'force-dynamic'
 export const revalidate = 3600 // Revalidate every hour
 
 // Define blog post and related posts types
