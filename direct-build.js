@@ -7,9 +7,9 @@ console.log('Starting direct build process...');
 
 // Create .env.local file
 console.log('Creating .env.local file...');
-const envContent = 
+const envContent =
 `NEXT_PUBLIC_SUPABASE_URL=https://xahxjhzngahtcuekbpnj.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhaHhqaHpuZ2FodGN1ZWticG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NTI3NzcsImV4cCI6MjAzMTUyODc3N30.Nh8yCZtYJJnRBLGnB9LUqhBpkLhqDMpJgBpQk_aVwYM
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhaHhqaHpuZ2FodGN1ZWticG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5MDg5MDksImV4cCI6MjA2MjQ4NDkwOX0.S77Knjse4ZQCcHBfjai7Cu1ThcElR60_iV23huRWa3E
 NEXT_FORCE_DYNAMIC=1`;
 
 fs.writeFileSync('.env.local', envContent);
@@ -39,13 +39,13 @@ if (fs.existsSync(adminDir)) {
   if (!fs.existsSync(adminBackupDir)) {
     fs.mkdirSync(adminBackupDir, { recursive: true });
   }
-  
+
   // Copy admin directory to backup
   execSync(`cp -r ${adminDir} ${adminBackupDir}`);
-  
+
   // Remove admin directory
   execSync(`rm -rf ${adminDir}`);
-  
+
   console.log('Admin directory backed up to /tmp/admin-backup');
 } else {
   console.log('Admin directory not found, skipping backup');
@@ -60,7 +60,7 @@ try {
       NODE_ENV: 'production',
       NEXT_FORCE_DYNAMIC: '1',
       NEXT_PUBLIC_SUPABASE_URL: 'https://xahxjhzngahtcuekbpnj.supabase.co',
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhaHhqaHpuZ2FodGN1ZWticG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NTI3NzcsImV4cCI6MjAzMTUyODc3N30.Nh8yCZtYJJnRBLGnB9LUqhBpkLhqDMpJgBpQk_aVwYM'
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhaHhqaHpuZ2FodGN1ZWticG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5MDg5MDksImV4cCI6MjA2MjQ4NDkwOX0.S77Knjse4ZQCcHBfjai7Cu1ThcElR60_iV23huRWa3E'
     },
     stdio: 'inherit'
   });
@@ -78,10 +78,10 @@ if (fs.existsSync(adminBackupSrcDir)) {
   if (!fs.existsSync(adminDir)) {
     fs.mkdirSync(adminDir, { recursive: true });
   }
-  
+
   // Copy admin directory from backup
   execSync(`cp -r ${adminBackupSrcDir}/* ${adminDir}`);
-  
+
   console.log('Admin directory restored from /tmp/admin-backup');
 } else {
   console.log('Admin backup not found, skipping restore');

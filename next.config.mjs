@@ -19,17 +19,16 @@ const nextConfig = {
     });
     return config;
   },
-  // Add experimental features for better compatibility
-  experimental: {
-    // This helps with Supabase data fetching during build
-    serverComponentsExternalPackages: ['@supabase/supabase-js'],
-    // Increase the timeout for static generation
-    staticPageGenerationTimeout: 180,
-  },
+  // External packages for server components
+  serverExternalPackages: ['@supabase/supabase-js'],
   // Set all pages to be server-side rendered by default
   // This ensures dynamic data fetching from Supabase
   reactStrictMode: true,
-  swcMinify: true,
+  // Add experimental features for better compatibility
+  experimental: {
+    // Increase the timeout for page generation
+    pageGenerationTimeout: 180,
+  },
 }
 
 export default nextConfig
