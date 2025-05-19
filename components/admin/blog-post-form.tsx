@@ -153,7 +153,18 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
 
           <LocalImageUpload
             value={featuredImage}
-            onChange={setFeaturedImage}
+            onChange={(url) => {
+              console.log("Blog image URL updated:", url);
+              setFeaturedImage(url);
+
+              // Validate the image URL by trying to load it
+              if (url) {
+                const img = new Image();
+                img.onload = () => console.log("Blog image loaded successfully:", url);
+                img.onerror = () => console.error("Failed to load blog image:", url);
+                img.src = url;
+              }
+            }}
             label="الصورة الرئيسية"
             folder="blog"
             helpText="الصورة الرئيسية للمقال (اختياري)"

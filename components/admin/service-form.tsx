@@ -153,7 +153,18 @@ export function ServiceForm({ service }: { service?: Service }) {
 
           <LocalImageUpload
             value={image}
-            onChange={setImage}
+            onChange={(url) => {
+              console.log("Image URL updated:", url);
+              setImage(url);
+
+              // Validate the image URL by trying to load it
+              if (url) {
+                const img = new Image();
+                img.onload = () => console.log("Image loaded successfully:", url);
+                img.onerror = () => console.error("Failed to load image:", url);
+                img.src = url;
+              }
+            }}
             label="صورة الخدمة"
             folder="services"
             helpText="صورة توضيحية للخدمة (اختياري)"

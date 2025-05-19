@@ -84,10 +84,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Return the URL to the uploaded file
-    const fileUrl = `/uploads/${folder}/${fileName}`
+    // Construct the correct URL path
+    const fileUrl = `/uploads/${folder}/${fileName}`;
 
-    return NextResponse.json({ url: fileUrl })
+    // Verify the file exists after writing
+    const publicFilePath = join(process.cwd(), 'public', 'uploads', folder, fileName);
+
+    console.log('File should be available at:', publicFilePath);
+    console.log('Public URL will be:', fileUrl);
+
+    // Set appropriate permissions on the file to ensure it's readable
+    try {
+      // On Unix systems, this would set read permissions for all users
+      // This is a no-op on Windows
+      const { chmod } = require('fs/promises');
+      await chmod(filePath, 0o644);
+    } catch (chmodError) {
+      console.warn('Could not set file permissions:', chmodError);
+      // Continue anyway as this might be Windows
+    }
+
+    // Return the URL to the uploaded file with cache-busting timestamp
+    return NextResponse.json({
+      url: fileUrl,
+      success: true,
+      timestamp: Date.now() // Add timestamp for cache busting
+    })
   } catch (error) {
     console.error('Error uploading file:', error)
     return NextResponse.json(

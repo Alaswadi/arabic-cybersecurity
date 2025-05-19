@@ -94,12 +94,15 @@ export function LocalImageUpload({
       <div className="flex flex-col gap-4">
         {preview ? (
           <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden">
-            <Image
+            {/* Use a regular img tag instead of Next.js Image component for more reliable previews */}
+            <img
               src={`${preview}?t=${Date.now()}`} // Add cache-busting timestamp
               alt={label}
-              fill
-              className="object-cover"
-              unoptimized // Bypass Next.js image optimization to ensure fresh images
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => {
+                console.error(`Error loading image: ${preview}`);
+                e.currentTarget.src = '/placeholder-image.jpg'; // Fallback image
+              }}
             />
             <Button
               type="button"
