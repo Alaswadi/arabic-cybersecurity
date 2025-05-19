@@ -53,20 +53,22 @@ export function LocalImageUpload({
       formData.append('folder', folder)
 
       // Upload file to our API
+      console.log('Uploading file to /api/upload...')
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       })
 
+      const responseData = await response.json()
+      console.log('Upload response:', responseData)
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'حدث خطأ أثناء رفع الصورة')
+        throw new Error(responseData.error || 'حدث خطأ أثناء رفع الصورة')
       }
 
-      const data = await response.json()
-      
       // Set the URL
-      const imageUrl = data.url
+      const imageUrl = responseData.url
+      console.log('Image uploaded successfully:', imageUrl)
       onChange(imageUrl)
       setPreview(imageUrl)
     } catch (error: any) {
@@ -88,15 +90,16 @@ export function LocalImageUpload({
   return (
     <div className="space-y-2">
       <Label htmlFor={`image-upload-${label}`}>{label}</Label>
-      
+
       <div className="flex flex-col gap-4">
         {preview ? (
           <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden">
             <Image
-              src={preview}
+              src={`${preview}?t=${Date.now()}`} // Add cache-busting timestamp
               alt={label}
               fill
               className="object-cover"
+              unoptimized // Bypass Next.js image optimization to ensure fresh images
             />
             <Button
               type="button"

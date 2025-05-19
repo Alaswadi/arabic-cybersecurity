@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
-import { createClient } from '@/lib/supabase/server'
+import { existsSync } from 'fs'
 import { cookies } from 'next/headers'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 
@@ -62,12 +62,27 @@ export async function POST(request: NextRequest) {
     const uploadDir = join(process.cwd(), 'public', 'uploads', folder)
     const filePath = join(uploadDir, fileName)
 
+    // Create the directory if it doesn't exist
+    if (!existsSync(uploadDir)) {
+      await mkdir(uploadDir, { recursive: true })
+      console.log(`Created directory: ${uploadDir}`)
+    }
+
     // Convert the file to a Buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
     // Write the file to disk
-    await writeFile(filePath, buffer)
+    try {
+      await writeFile(filePath, buffer)
+      console.log(`File written successfully to: ${filePath}`)
+    } catch (writeError) {
+      console.error('Error writing file:', writeError)
+      return NextResponse.json(
+        { error: `Failed to write file: ${writeError.message}` },
+        { status: 500 }
+      )
+    }
 
     // Return the URL to the uploaded file
     const fileUrl = `/uploads/${folder}/${fileName}`

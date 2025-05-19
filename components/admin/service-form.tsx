@@ -92,8 +92,14 @@ export function ServiceForm({ service }: { service?: Service }) {
         })
       }
 
-      router.push("/admin/services")
-      router.refresh()
+      // Force a server refresh before redirecting
+      await fetch('/api/revalidate?path=/admin/services', { method: 'POST' })
+
+      // Add a small delay before redirecting to ensure revalidation completes
+      setTimeout(() => {
+        router.push("/admin/services")
+        router.refresh()
+      }, 500)
     } catch (err: any) {
       setError(err.message || "حدث خطأ أثناء حفظ الخدمة")
     } finally {

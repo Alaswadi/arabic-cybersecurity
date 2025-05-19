@@ -94,8 +94,14 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
         })
       }
 
-      router.push("/admin/blog")
-      router.refresh()
+      // Force a server refresh before redirecting
+      await fetch('/api/revalidate?path=/admin/blog', { method: 'POST' })
+
+      // Add a small delay before redirecting to ensure revalidation completes
+      setTimeout(() => {
+        router.push("/admin/blog")
+        router.refresh()
+      }, 500)
     } catch (err: any) {
       setError(err.message || "حدث خطأ أثناء حفظ المقال")
     } finally {

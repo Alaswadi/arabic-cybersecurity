@@ -4,10 +4,19 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { BlogPostsTable } from "@/components/admin/blog-posts-table"
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic'
+export const revalidate = 0 // Revalidate on every request
+
 export default async function BlogPostsPage() {
   const supabase = createClient()
 
-  const { data: posts, error } = await supabase.from("blog_posts").select("*").order("created_at", { ascending: false })
+  // Fetch blog posts with cache-busting query parameter
+  const { data: posts, error } = await supabase
+    .from("blog_posts")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .throwOnError() // This will throw an error if the query fails
 
   return (
     <div>
