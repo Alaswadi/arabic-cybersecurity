@@ -34,6 +34,56 @@ BEGIN
 END
 $$;`
 
+  const fixRlsScript = `-- Fix RLS policies for contact_messages table to allow anonymous insertions
+-- First, drop the existing insert policy if it exists
+DROP POLICY IF EXISTS "Anyone can insert contact messages" ON contact_messages;
+
+-- Create a new policy that allows anonymous insertions
+CREATE POLICY "Anyone can insert contact messages" ON contact_messages
+  FOR INSERT
+  WITH CHECK (true);
+
+-- Make sure the table has RLS enabled
+ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
+
+-- Verify other policies are still in place
+DO $$
+BEGIN
+  -- Check if the select policy exists, if not create it
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'contact_messages'
+    AND operation = 'SELECT'
+  ) THEN
+    CREATE POLICY "Authenticated users can view contact messages" ON contact_messages
+      FOR SELECT
+      USING (auth.role() = 'authenticated');
+  END IF;
+
+  -- Check if the update policy exists, if not create it
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'contact_messages'
+    AND operation = 'UPDATE'
+  ) THEN
+    CREATE POLICY "Authenticated users can update contact messages" ON contact_messages
+      FOR UPDATE
+      USING (auth.role() = 'authenticated');
+  END IF;
+
+  -- Check if the delete policy exists, if not create it
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'contact_messages'
+    AND operation = 'DELETE'
+  ) THEN
+    CREATE POLICY "Authenticated users can delete contact messages" ON contact_messages
+      FOR DELETE
+      USING (auth.role() = 'authenticated');
+  END IF;
+END
+$$;`
+
   const contactMessagesScript = `-- Add contact_messages table if it doesn't exist
 DO $$
 BEGIN
@@ -95,7 +145,14 @@ END
 $$;`
 
   const copyToClipboard = () => {
-    const scriptToCopy = activeTab === "services" ? servicesScript : contactMessagesScript
+    let scriptToCopy = servicesScript
+
+    if (activeTab === "contact") {
+      scriptToCopy = contactMessagesScript
+    } else if (activeTab === "fix-rls") {
+      scriptToCopy = fixRlsScript
+    }
+
     navigator.clipboard.writeText(scriptToCopy)
   }
 
@@ -117,9 +174,13 @@ $$;`
     })
 
     try {
-      const endpoint = activeTab === "services"
-        ? "/api/db/update-schema"
-        : "/api/db/update-contact-schema"
+      let endpoint = "/api/db/update-schema"
+
+      if (activeTab === "contact") {
+        endpoint = "/api/db/update-contact-schema"
+      } else if (activeTab === "fix-rls") {
+        endpoint = "/api/db/fix-contact-rls"
+      }
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -171,6 +232,7 @@ $$;`
             <TabsList className="mb-6">
               <TabsTrigger value="services">جدول الخدمات</TabsTrigger>
               <TabsTrigger value="contact">جدول رسائل التواصل</TabsTrigger>
+              <TabsTrigger value="fix-rls">إصلاح سياسات RLS</TabsTrigger>
             </TabsList>
 
             <TabsContent value="services">
@@ -290,6 +352,68 @@ $$;`
                     <li>إنشاء جدول جديد <code>contact_messages</code> لتخزين رسائل التواصل</li>
                     <li>إضافة الأعمدة اللازمة: الاسم، البريد الإلكتروني، رقم الهاتف، الموضوع، الرسالة، تاريخ الإرسال، حالة القراءة</li>
                     <li>إعداد سياسات أمان الصفوف (RLS) للجدول</li>
+                  </ul>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="fix-rls">
+              <div className="space-y-6">
+                {updateStatus.message && (
+                  <Alert
+                    variant={updateStatus.success === true ? "default" : updateStatus.success === false ? "destructive" : undefined}
+                    className="mb-6"
+                  >
+                    {updateStatus.success === true ? (
+                      <CheckCircle className="h-4 w-4" />
+                    ) : updateStatus.success === false ? (
+                      <AlertCircle className="h-4 w-4" />
+                    ) : null}
+                    <AlertTitle>
+                      {updateStatus.success === true ? "تم التحديث" :
+                       updateStatus.success === false ? "خطأ" : "جاري التحديث"}
+                    </AlertTitle>
+                    <AlertDescription>{updateStatus.message}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium">إصلاح سياسات RLS لجدول رسائل التواصل</h3>
+                  <Button
+                    onClick={handleAutomaticUpdate}
+                    disabled={updateStatus.loading}
+                  >
+                    {updateStatus.loading && activeTab === "fix-rls" ? (
+                      <>
+                        <span className="mr-2 h-4 w-4 animate-spin">⏳</span>
+                        جاري التحديث...
+                      </>
+                    ) : (
+                      "تحديث تلقائي"
+                    )}
+                  </Button>
+                </div>
+
+                <div className="relative">
+                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto text-sm mb-4 max-h-80 overflow-y-auto">
+                    <code>{fixRlsScript}</code>
+                  </pre>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute top-2 right-2 h-8 w-8 bg-gray-800 border-gray-700 hover:bg-gray-700"
+                    onClick={copyToClipboard}
+                  >
+                    <Copy className="h-4 w-4 text-gray-400" />
+                  </Button>
+                </div>
+
+                <div className="mt-4 text-sm text-gray-500">
+                  <p>التغييرات التي سيتم إجراؤها:</p>
+                  <ul className="list-disc list-inside mt-2">
+                    <li>تحديث سياسة RLS للسماح بإدخال رسائل التواصل من المستخدمين غير المسجلين</li>
+                    <li>إصلاح مشكلة عدم القدرة على إرسال رسائل من نموذج التواصل</li>
+                    <li>التأكد من وجود جميع سياسات RLS الأخرى للجدول</li>
                   </ul>
                 </div>
               </div>

@@ -8,17 +8,17 @@ export async function POST(request: NextRequest) {
     // Check authentication
     const supabaseAuth = createServerComponentClient({ cookies })
     const { data: { session } } = await supabaseAuth.auth.getSession()
-    
+
     if (!session) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
-    
+
     // Create Supabase client
     const supabase = createClient()
-    
+
     // Add contact_messages table if it doesn't exist
     const { error } = await supabase.rpc('execute_sql', {
       sql_query: `
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
             -- Add RLS policies
             ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
 
-            -- Allow authenticated users to insert new messages
+            -- Allow anyone (including anonymous users) to insert new messages
             CREATE POLICY "Anyone can insert contact messages" ON contact_messages
               FOR INSERT
               WITH CHECK (true);
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
         $$;
       `
     })
-    
+
     if (error) {
       console.error('Error updating schema:', error)
       return NextResponse.json(
@@ -90,10 +90,10 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Schema updated successfully with contact_messages table' 
+
+    return NextResponse.json({
+      success: true,
+      message: 'Schema updated successfully with contact_messages table'
     })
   } catch (error: any) {
     console.error('Error updating schema:', error)

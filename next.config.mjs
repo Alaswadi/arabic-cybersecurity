@@ -19,16 +19,17 @@ const nextConfig = {
     });
     return config;
   },
-  // External packages for server components
-  serverExternalPackages: ['@supabase/supabase-js'],
   // Set all pages to be server-side rendered by default
   // This ensures dynamic data fetching from Supabase
   reactStrictMode: true,
   // Add experimental features for better compatibility
   experimental: {
-    // Next.js doesn't support pageGenerationTimeout anymore
-    // Using the correct property for timeouts
-    staticGenerationTimeout: 180,
+    // Configure server actions and components
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+    // External packages for server components
+    serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
 }
 
