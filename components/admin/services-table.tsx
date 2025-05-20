@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Edit, MoreHorizontal, Trash } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { FallbackImage } from "@/components/ui/fallback-image"
 
 type Service = Database["public"]["Tables"]["services"]["Row"]
 
@@ -81,20 +82,10 @@ export function ServicesTable({ services }: { services: Service[] }) {
                   <TableCell>
                     {service.image ? (
                       <div className="relative h-10 w-10 rounded overflow-hidden">
-                        <img
-                          src={service.image.startsWith('/uploads/')
-                            ? `/api/image/${service.image.replace('/uploads/', '')}?t=${Date.now()}`
-                            : service.image}
+                        <FallbackImage
+                          src={service.image}
                           alt={service.title}
                           className="object-cover h-full w-full"
-                          onError={(e) => {
-                            console.error(`Error loading thumbnail: ${service.image}`);
-                            e.currentTarget.style.backgroundColor = '#f0f0f0';
-                            // Try direct path as fallback
-                            if (service.image.startsWith('/uploads/')) {
-                              e.currentTarget.src = service.image + '?t=' + Date.now();
-                            }
-                          }}
                         />
                       </div>
                     ) : (

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { NavButton } from "@/components/ui/nav-button"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
+import { FallbackImage } from "@/components/ui/fallback-image"
 
 // Make this page dynamic to fetch data from Supabase at request time
 export const dynamic = 'force-dynamic'
@@ -164,20 +165,10 @@ export default async function ServicesPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div className="relative h-80 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
                 {featuredService.image ? (
-                  <img
-                    src={featuredService.image.startsWith('/uploads/')
-                      ? `/api/image/${featuredService.image.replace('/uploads/', '')}?t=${Date.now()}`
-                      : featuredService.image}
+                  <FallbackImage
+                    src={featuredService.image}
                     alt={featuredService.title}
                     className="absolute inset-0 w-full h-full object-cover"
-                    onError={(e) => {
-                      console.error(`Error loading featured service image: ${featuredService.image}`);
-                      e.currentTarget.style.backgroundColor = '#f0f0f0';
-                      // Try direct path as fallback
-                      if (featuredService.image.startsWith('/uploads/')) {
-                        e.currentTarget.src = featuredService.image + '?t=' + Date.now();
-                      }
-                    }}
                   />
                 ) : (
                   <div className="h-full bg-gray-100 flex items-center justify-center">
@@ -217,20 +208,10 @@ export default async function ServicesPage() {
               <div key={index} className="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm transition-all duration-300 hover:border-purple-500 hover-card-effect">
                 {service.image && (
                   <div className="relative h-48 w-full">
-                    <img
-                      src={service.image.startsWith('/uploads/')
-                        ? `/api/image/${service.image.replace('/uploads/', '')}?t=${Date.now()}`
-                        : service.image}
+                    <FallbackImage
+                      src={service.image}
                       alt={service.title}
                       className="absolute inset-0 w-full h-full object-cover"
-                      onError={(e) => {
-                        console.error(`Error loading service image: ${service.image}`);
-                        e.currentTarget.style.backgroundColor = '#f0f0f0';
-                        // Try direct path as fallback
-                        if (service.image.startsWith('/uploads/')) {
-                          e.currentTarget.src = service.image + '?t=' + Date.now();
-                        }
-                      }}
                     />
                   </div>
                 )}

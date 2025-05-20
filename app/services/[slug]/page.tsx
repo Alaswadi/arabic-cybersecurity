@@ -7,6 +7,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
+import { FallbackImage } from "@/components/ui/fallback-image"
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -181,20 +182,10 @@ export default async function ServiceDetailPage(
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                 {service.image && (
                   <div className="relative h-64 w-full">
-                    <img
-                      src={service.image.startsWith('/uploads/')
-                        ? `/api/image/${service.image.replace('/uploads/', '')}?t=${Date.now()}`
-                        : service.image}
+                    <FallbackImage
+                      src={service.image}
                       alt={service.title}
                       className="absolute inset-0 w-full h-full object-cover"
-                      onError={(e) => {
-                        console.error(`Error loading service detail image: ${service.image}`);
-                        e.currentTarget.style.backgroundColor = '#f0f0f0';
-                        // Try direct path as fallback
-                        if (service.image.startsWith('/uploads/')) {
-                          e.currentTarget.src = service.image + '?t=' + Date.now();
-                        }
-                      }}
                     />
                   </div>
                 )}
