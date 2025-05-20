@@ -26,6 +26,38 @@ export interface Database {
           created_at?: string
         }
       }
+      contact_messages: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          subject: string | null
+          message: string
+          created_at: string
+          read: boolean
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone?: string | null
+          subject?: string | null
+          message: string
+          created_at?: string
+          read?: boolean
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          subject?: string | null
+          message?: string
+          created_at?: string
+          read?: boolean
+        }
+      }
       blog_posts: {
         Row: {
           id: string

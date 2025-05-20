@@ -2,9 +2,8 @@ import React from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { MapPin, Phone, Mail, Clock, MessageSquare, Users } from "lucide-react"
+import { ContactForm } from "@/components/contact-form"
 
 export default function ContactPage() {
   const contactInfo = [
@@ -76,64 +75,7 @@ export default function ContactPage() {
               <h2 className="text-2xl font-bold mb-6 text-gray-900">
                 أرسل لنا رسالة
               </h2>
-              <form className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      الاسم الكامل
-                    </label>
-                    <Input
-                      id="name"
-                      placeholder="أدخل اسمك الكامل"
-                      className="bg-white border-gray-300 text-gray-900"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      البريد الإلكتروني
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="أدخل بريدك الإلكتروني"
-                      className="bg-white border-gray-300 text-gray-900"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-                    اسم الشركة
-                  </label>
-                  <Input
-                    id="company"
-                    placeholder="أدخل اسم شركتك"
-                    className="bg-white border-gray-300 text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                    الموضوع
-                  </label>
-                  <Input
-                    id="subject"
-                    placeholder="أدخل موضوع الرسالة"
-                    className="bg-white border-gray-300 text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                    الرسالة
-                  </label>
-                  <Textarea
-                    id="message"
-                    placeholder="اكتب رسالتك هنا..."
-                    className="bg-white border-gray-300 text-gray-900 min-h-[150px]"
-                  />
-                </div>
-                <Button className="gradient-bg hover:opacity-90 w-full py-6 text-lg h-auto">
-                  إرسال الرسالة
-                </Button>
-              </form>
+              <ContactForm />
             </div>
 
             {/* Contact Info */}

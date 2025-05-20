@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { BarChart, FileText, Settings } from "lucide-react"
+import { BarChart, FileText, MessageSquare, Settings } from "lucide-react"
 
 export default async function AdminDashboard() {
   const supabase = createClient()
@@ -11,6 +11,8 @@ export default async function AdminDashboard() {
   let servicesCount = 0
   let blogPostsCount = 0
   let publishedBlogPostsCount = 0
+  let messagesCount = 0
+  let unreadMessagesCount = 0
 
   try {
     const { count: sCount } = await supabase.from("services").select("*", { count: "exact", head: true })
@@ -34,6 +36,25 @@ export default async function AdminDashboard() {
     if (pbCount !== null) publishedBlogPostsCount = pbCount
   } catch (error) {
     console.error("Error fetching published blog posts count:", error)
+  }
+
+  try {
+    const { count: mCount } = await supabase
+      .from("contact_messages")
+      .select("*", { count: "exact", head: true })
+    if (mCount !== null) messagesCount = mCount
+  } catch (error) {
+    console.error("Error fetching contact messages count:", error)
+  }
+
+  try {
+    const { count: umCount } = await supabase
+      .from("contact_messages")
+      .select("*", { count: "exact", head: true })
+      .eq("read", false)
+    if (umCount !== null) unreadMessagesCount = umCount
+  } catch (error) {
+    console.error("Error fetching unread contact messages count:", error)
   }
 
   return (
@@ -79,16 +100,18 @@ export default async function AdminDashboard() {
 
         <Card className="bg-[#1a1c3a] text-white border-[#2f3365]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-white">الإحصائيات</CardTitle>
-            <BarChart className="h-4 w-4 text-gray-400" />
+            <CardTitle className="text-sm font-medium text-white">رسائل التواصل</CardTitle>
+            <MessageSquare className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">-</div>
-            <p className="text-xs text-gray-400">إحصائيات الموقع</p>
+            <div className="text-2xl font-bold text-white">{messagesCount}</div>
+            <p className="text-xs text-gray-400">إجمالي الرسائل ({unreadMessagesCount} غير مقروءة)</p>
             <div className="mt-4">
-              <Button size="sm" variant="outline" disabled className="border-[#2f3365] text-gray-500 hover:bg-[#242850]">
-                عرض التفاصيل
-              </Button>
+              <Link href="/admin/messages">
+                <Button size="sm" variant="outline" className="border-[#2f3365] text-white hover:bg-[#242850] hover:text-white">
+                  إدارة الرسائل
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

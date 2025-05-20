@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Settings, FileText, LogOut, Menu, X, Database, TableProperties } from "lucide-react"
+import { LayoutDashboard, Settings, FileText, LogOut, Menu, X, Database, TableProperties, MessageSquare } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 
@@ -35,6 +35,11 @@ export function AdminSidebar() {
       title: "المقالات",
       href: "/admin/blog",
       icon: FileText,
+    },
+    {
+      title: "رسائل التواصل",
+      href: "/admin/messages",
+      icon: MessageSquare,
     },
     {
       title: "سياسة التخزين",
