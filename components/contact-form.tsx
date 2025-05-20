@@ -72,7 +72,7 @@ export function ContactForm() {
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    
+
     // Clear error for this field when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }))
@@ -93,7 +93,8 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/contact", {
+      // Use the direct API endpoint that bypasses RLS
+      const response = await fetch("/api/contact-direct", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +110,7 @@ export function ContactForm() {
           type: "success",
           message: data.message || "تم إرسال رسالتك بنجاح. سنتواصل معك قريبًا.",
         })
-        
+
         // Reset form
         setFormData({
           name: "",
@@ -124,7 +125,7 @@ export function ContactForm() {
           type: "error",
           message: data.message || "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.",
         })
-        
+
         // Set field errors if returned from API
         if (data.errors) {
           const fieldErrors: FormErrors = {}
