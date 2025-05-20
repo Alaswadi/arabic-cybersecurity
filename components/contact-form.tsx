@@ -93,8 +93,8 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      // Use the hardcoded service role key endpoint
-      const response = await fetch("/api/contact-hardcoded", {
+      // Use the standard contact form API
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
