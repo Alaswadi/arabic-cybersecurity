@@ -37,19 +37,27 @@ export async function POST(request: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!supabaseUrl || !supabaseServiceKey) {
-      console.error('Missing Supabase URL or service role key');
+    // Log environment variables for debugging (don't include full key in production)
+    console.log('Environment variables check:');
+    console.log('NEXT_PUBLIC_SUPABASE_URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('SUPABASE_SERVICE_ROLE_KEY exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+    // Fallback to hardcoded URL if environment variable is missing
+    const finalSupabaseUrl = supabaseUrl || 'https://xahxjhzngahtcuekbpnj.supabase.co';
+
+    if (!supabaseServiceKey) {
+      console.error('Missing Supabase service role key');
       return NextResponse.json(
         {
           success: false,
-          message: "خطأ في تكوين الخادم. يرجى الاتصال بمسؤول النظام."
+          message: "خطأ في تكوين الخادم: مفتاح الخدمة غير متوفر. يرجى الاتصال بمسؤول النظام."
         },
         { status: 500 }
       );
     }
 
     // Create a Supabase client with service role key
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    const supabase = createClient(finalSupabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false
