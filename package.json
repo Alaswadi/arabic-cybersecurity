@@ -7,7 +7,8 @@
     "build": "node direct-build.js",
     "build:next": "NODE_ENV=production NEXT_PUBLIC_SUPABASE_URL=https://xahxjhzngahtcuekbpnj.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhaHhqaHpuZ2FodGN1ZWticG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NTI3NzcsImV4cCI6MjAzMTUyODc3N30.Nh8yCZtYJJnRBLGnB9LUqhBpkLhqDMpJgBpQk_aVwYM next build",
     "start": "node direct-start.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "setup-email": "npm install nodemailer @types/nodemailer"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

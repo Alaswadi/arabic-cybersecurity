@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
+import { sendEmail } from '@/lib/email/sender';
+import { isEmailConfigValid } from '@/lib/email/config';
 
 // Define validation schema for contact form
 const contactFormSchema = z.object({
@@ -32,18 +34,29 @@ export async function POST(request: NextRequest) {
     // Get validated data
     const { name, email, phone, subject, message } = validationResult.data;
 
-    // Log the contact form submission
-    console.log('Contact form submission:');
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Phone:', phone || 'Not provided');
-    console.log('Subject:', subject || 'Not provided');
-    console.log('Message:', message);
+    // Check if email configuration is valid
+    const configValid = isEmailConfigValid();
+    if (!configValid) {
+      console.warn('Email configuration is not valid. Please update lib/email/config.ts');
+    }
 
-    // In a real implementation, you would send an email here
-    // For now, we'll just log the submission and return a success response
+    // Send the email
+    const emailResult = await sendEmail({
+      name,
+      email,
+      phone,
+      subject,
+      message
+    });
 
-    // Return success response
+    // Log the result
+    if (emailResult.success) {
+      console.log('Email sent successfully');
+    } else {
+      console.error('Failed to send email:', emailResult.error);
+    }
+
+    // Return success response (even if email failed, to provide a good user experience)
     return NextResponse.json({
       success: true,
       message: "تم استلام رسالتك بنجاح. سنتواصل معك قريبًا.",
