@@ -237,6 +237,43 @@ $$;`
     }
   }
 
+  const handleHardcodedKeyUpdate = async () => {
+    setUpdateStatus({
+      loading: true,
+      success: null,
+      message: "جاري تحديث سياسات RLS باستخدام المفتاح المضمن..."
+    })
+
+    try {
+      const response = await fetch("/api/db/fix-rls-direct-key", {
+        method: "POST",
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setUpdateStatus({
+          loading: false,
+          success: true,
+          message: data.message || "تم تحديث سياسات RLS بنجاح"
+        })
+      } else {
+        setUpdateStatus({
+          loading: false,
+          success: false,
+          message: data.error || "حدث خطأ أثناء تحديث سياسات RLS"
+        })
+      }
+    } catch (error) {
+      console.error("Error updating RLS policies with hardcoded key:", error)
+      setUpdateStatus({
+        loading: false,
+        success: false,
+        message: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
+      })
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -260,6 +297,7 @@ $$;`
               <TabsTrigger value="contact">جدول رسائل التواصل</TabsTrigger>
               <TabsTrigger value="fix-rls">إصلاح سياسات RLS</TabsTrigger>
               <TabsTrigger value="fix-rls-direct">إصلاح RLS مباشر</TabsTrigger>
+              <TabsTrigger value="fix-rls-hardcoded">إصلاح RLS بالمفتاح</TabsTrigger>
             </TabsList>
 
             <TabsContent value="services">
@@ -492,6 +530,66 @@ $$;`
                     <p className="text-amber-700">
                       يتطلب هذا الخيار وجود مفتاح الخدمة (Service Role Key) لـ Supabase في متغيرات البيئة.
                       تأكد من إعداد متغير البيئة SUPABASE_SERVICE_ROLE_KEY قبل استخدام هذا الخيار.
+                    </p>
+                  </div>
+
+                  <div className="mt-4">
+                    <p>التغييرات التي سيتم إجراؤها:</p>
+                    <ul className="list-disc list-inside mt-2">
+                      <li>تحديث سياسة RLS للسماح بإدخال رسائل التواصل من المستخدمين غير المسجلين</li>
+                      <li>إصلاح مشكلة عدم القدرة على إرسال رسائل من نموذج التواصل</li>
+                      <li>التأكد من وجود جميع سياسات RLS الأخرى للجدول</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="fix-rls-hardcoded">
+              <div className="space-y-6">
+                {updateStatus.message && (
+                  <Alert
+                    variant={updateStatus.success === true ? "default" : updateStatus.success === false ? "destructive" : undefined}
+                    className="mb-6"
+                  >
+                    {updateStatus.success === true ? (
+                      <CheckCircle className="h-4 w-4" />
+                    ) : updateStatus.success === false ? (
+                      <AlertCircle className="h-4 w-4" />
+                    ) : null}
+                    <AlertTitle>
+                      {updateStatus.success === true ? "تم التحديث" :
+                       updateStatus.success === false ? "خطأ" : "جاري التحديث"}
+                    </AlertTitle>
+                    <AlertDescription>{updateStatus.message}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium">إصلاح سياسات RLS باستخدام المفتاح المضمن</h3>
+                  <Button
+                    onClick={handleHardcodedKeyUpdate}
+                    disabled={updateStatus.loading}
+                  >
+                    {updateStatus.loading && activeTab === "fix-rls-hardcoded" ? (
+                      <>
+                        <span className="mr-2 h-4 w-4 animate-spin">⏳</span>
+                        جاري التحديث...
+                      </>
+                    ) : (
+                      "تحديث بالمفتاح"
+                    )}
+                  </Button>
+                </div>
+
+                <div className="mt-4 text-sm text-gray-500">
+                  <p>هذا الخيار يستخدم مفتاح الخدمة المضمن مباشرة في الكود بدلاً من استخدام متغيرات البيئة.</p>
+                  <p>استخدم هذا الخيار إذا فشلت الخيارات الأخرى.</p>
+
+                  <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                    <h4 className="font-medium text-green-800 mb-2">ميزة هذا الخيار</h4>
+                    <p className="text-green-700">
+                      لا يتطلب هذا الخيار إعداد متغيرات البيئة، حيث أن مفتاح الخدمة مضمن مباشرة في الكود.
                     </p>
                   </div>
 

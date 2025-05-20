@@ -93,8 +93,8 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      // Use the Supabase-based contact form API
-      const response = await fetch("/api/contact", {
+      // Use the hardcoded service role key endpoint
+      const response = await fetch("/api/contact-hardcoded", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
