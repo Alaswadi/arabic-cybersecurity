@@ -93,26 +93,14 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      // Try the direct API endpoint first
-      let response = await fetch("/api/contact-direct", {
+      // Use the email-based contact form API
+      const response = await fetch("/api/contact-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       })
-
-      // If the direct endpoint fails with a server error, try the fallback endpoint
-      if (response.status >= 500) {
-        console.log("Direct API endpoint failed, trying fallback endpoint");
-        response = await fetch("/api/contact-fallback", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        })
-      }
 
       const data = await response.json()
 
