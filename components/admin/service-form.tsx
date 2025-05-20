@@ -166,7 +166,7 @@ export function ServiceForm({ service }: { service?: Service }) {
                   ? `/api/image/${url.replace('/uploads/', '')}`
                   : url;
 
-                const img = new Image();
+                const img = document.createElement('img');
                 img.onload = () => console.log("Service image loaded successfully:", apiUrl);
                 img.onerror = () => console.error("Failed to load service image:", apiUrl);
                 img.src = apiUrl;

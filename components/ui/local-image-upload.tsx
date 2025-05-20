@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Upload, X, Image as ImageIcon } from "lucide-react"
-import Image from "next/image"
 
 interface LocalImageUploadProps {
   value: string
@@ -75,7 +74,7 @@ export function LocalImageUpload({
       console.log('API image URL:', apiImageUrl);
 
       // Pre-load the image to verify it works
-      const img = new Image();
+      const img = document.createElement('img');
       img.onload = () => {
         console.log('Image pre-loaded successfully');
         // Use the original URL for storage but display through API

@@ -166,7 +166,7 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
                   ? `/api/image/${url.replace('/uploads/', '')}`
                   : url;
 
-                const img = new Image();
+                const img = document.createElement('img');
                 img.onload = () => console.log("Blog image loaded successfully:", apiUrl);
                 img.onerror = () => console.error("Failed to load blog image:", apiUrl);
                 img.src = apiUrl;
