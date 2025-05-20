@@ -112,12 +112,34 @@ export default async function ServiceDetailPage(
   let otherServices = [];
 
   try {
-    // Fetch service by ID
-    const { data: serviceData, error } = await supabase
+    // Try to fetch service by ID or slug
+    let serviceData;
+    let error;
+
+    // First try to fetch by ID
+    const { data, error: idError } = await supabase
       .from("services")
       .select("*")
       .eq("id", params.slug)
-      .single();
+      .maybeSingle();
+
+    if (data) {
+      serviceData = data;
+    } else {
+      // If not found by ID, try to fetch by slug-friendly ID
+      // This handles cases where the ID might be a string like "data-protection"
+      const { data: slugData, error: slugError } = await supabase
+        .from("services")
+        .select("*")
+        .ilike("id", params.slug)
+        .maybeSingle();
+
+      if (slugData) {
+        serviceData = slugData;
+      } else {
+        error = slugError || idError;
+      }
+    }
 
     if (error || !serviceData) {
       console.error("Error fetching service:", error);

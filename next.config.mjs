@@ -28,9 +28,9 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    // External packages for server components
-    serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
+  // External packages for server components (moved from experimental)
+  serverExternalPackages: ['@supabase/supabase-js'],
 }
 
 export default nextConfig
