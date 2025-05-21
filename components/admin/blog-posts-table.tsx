@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Edit, Eye, MoreHorizontal, Trash } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { adminTheme } from "@/lib/admin-theme"
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"]
 
@@ -84,63 +85,100 @@ export function BlogPostsTable({ posts }: { posts: BlogPost[] }) {
 
   return (
     <>
-      <div className="rounded-md border">
+      <div style={{
+        borderRadius: adminTheme.borderRadius.md,
+        border: `1px solid ${adminTheme.colors.border.light}`,
+        overflow: 'hidden',
+        boxShadow: adminTheme.shadows.sm
+      }}>
         <Table>
-          <TableHeader>
+          <TableHeader style={{ backgroundColor: adminTheme.colors.background.sidebar }}>
             <TableRow>
-              <TableHead>العنوان</TableHead>
-              <TableHead>الرابط</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead>تاريخ الإنشاء</TableHead>
-              <TableHead className="w-[100px]">الإجراءات</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>العنوان</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الرابط</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الحالة</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>تاريخ الإنشاء</TableHead>
+              <TableHead className="w-[100px]" style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الإجراءات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {posts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center">
+                <TableCell colSpan={5} style={{
+                  textAlign: 'center',
+                  color: adminTheme.colors.text.secondary,
+                  padding: adminTheme.spacing.xl
+                }}>
                   لا توجد مقالات
                 </TableCell>
               </TableRow>
             ) : (
               posts.map((post) => (
-                <TableRow key={post.id}>
-                  <TableCell className="font-medium">{post.title}</TableCell>
-                  <TableCell className="font-mono text-sm">{post.slug}</TableCell>
+                <TableRow key={post.id} style={{
+                  backgroundColor: adminTheme.colors.background.card,
+                  borderBottom: `1px solid ${adminTheme.colors.border.light}`
+                }}>
+                  <TableCell style={{
+                    fontWeight: adminTheme.typography.fontWeights.medium,
+                    color: adminTheme.colors.text.primary
+                  }}>
+                    {post.title}
+                  </TableCell>
+                  <TableCell className="font-mono text-sm" style={{ color: adminTheme.colors.text.secondary }}>{post.slug}</TableCell>
                   <TableCell>
                     <Badge
                       variant={post.published ? "default" : "outline"}
-                      className={post.published ? "bg-green-500" : ""}
+                      style={{
+                        backgroundColor: post.published ? adminTheme.colors.status.success : 'transparent',
+                        color: post.published ? 'white' : adminTheme.colors.text.secondary,
+                        borderColor: post.published ? 'transparent' : adminTheme.colors.border.main
+                      }}
                     >
                       {post.published ? "منشور" : "مسودة"}
                     </Badge>
                   </TableCell>
-                  <TableCell>{new Date(post.created_at).toLocaleDateString("ar-SA")}</TableCell>
+                  <TableCell style={{ color: adminTheme.colors.text.secondary }}>
+                    {new Date(post.created_at).toLocaleDateString("ar-SA")}
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          style={{ color: adminTheme.colors.text.secondary }}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">فتح القائمة</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent
+                        align="end"
+                        style={{
+                          backgroundColor: adminTheme.colors.background.card,
+                          border: `1px solid ${adminTheme.colors.border.light}`,
+                          boxShadow: adminTheme.shadows.md
+                        }}
+                      >
                         <Link href={`/admin/blog/${post.id}`}>
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
+                          <DropdownMenuItem style={{ color: adminTheme.colors.text.primary }}>
+                            <Edit className="mr-2 h-4 w-4" style={{ color: adminTheme.colors.primary.main }} />
                             تعديل
                           </DropdownMenuItem>
                         </Link>
-                        <DropdownMenuItem onClick={() => togglePublishStatus(post)}>
-                          <Eye className="mr-2 h-4 w-4" />
+                        <DropdownMenuItem
+                          onClick={() => togglePublishStatus(post)}
+                          style={{ color: adminTheme.colors.text.primary }}
+                        >
+                          <Eye className="mr-2 h-4 w-4" style={{ color: adminTheme.colors.primary.main }} />
                           {post.published ? "إلغاء النشر" : "نشر"}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-red-600"
                           onClick={() => {
                             setPostToDelete(post)
                             setIsDeleteDialogOpen(true)
                           }}
+                          style={{ color: adminTheme.colors.status.danger }}
                         >
                           <Trash className="mr-2 h-4 w-4" />
                           حذف
@@ -156,16 +194,34 @@ export function BlogPostsTable({ posts }: { posts: BlogPost[] }) {
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent style={{
+          backgroundColor: adminTheme.colors.background.card,
+          border: `1px solid ${adminTheme.colors.border.light}`,
+          boxShadow: adminTheme.shadows.lg,
+          borderRadius: adminTheme.borderRadius.lg
+        }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>هل أنت متأكد من حذف هذا المقال؟</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle style={{ color: adminTheme.colors.text.primary }}>
+              هل أنت متأكد من حذف هذا المقال؟
+            </AlertDialogTitle>
+            <AlertDialogDescription style={{ color: adminTheme.colors.text.secondary }}>
               هذا الإجراء لا يمكن التراجع عنه. سيتم حذف المقال نهائياً من قاعدة البيانات.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>
+            <AlertDialogCancel style={{
+              borderColor: adminTheme.colors.border.main,
+              color: adminTheme.colors.text.primary
+            }}>
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              style={{
+                backgroundColor: adminTheme.colors.status.danger,
+                color: 'white'
+              }}
+            >
               حذف
             </AlertDialogAction>
           </AlertDialogFooter>

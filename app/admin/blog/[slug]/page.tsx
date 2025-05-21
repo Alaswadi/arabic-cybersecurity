@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound, redirect } from "next/navigation"
 import { BlogPostForm } from "@/components/admin/blog-post-form"
+import { adminTheme } from "@/lib/admin-theme"
 
 // Simple UUID validation regex
 const isValidUUID = (uuid: string) => {
@@ -36,7 +37,12 @@ export default async function EditBlogPostPage(
 
     return (
       <div>
-        <h1 className="text-3xl font-bold mb-6">تعديل المقال</h1>
+        <h1
+          className="text-3xl font-bold mb-6"
+          style={{ color: adminTheme.colors.primary.main }}
+        >
+          تعديل المقال
+        </h1>
         <BlogPostForm post={post} />
       </div>
     )

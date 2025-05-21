@@ -1,0 +1,110 @@
+/* Admin panel specific styles to override dark theme */
+
+/* Input fields - using very specific selectors to ensure they override other styles */
+html[class] body .admin-panel input[type="text"],
+html[class] body .admin-panel input[type="email"],
+html[class] body .admin-panel input[type="password"],
+html[class] body .admin-panel input[type="number"],
+html[class] body .admin-panel input[type="search"],
+html[class] body .admin-panel input[type="tel"],
+html[class] body .admin-panel input[type="url"],
+html[class] body .admin-panel input:not([type]),
+html[class] body .admin-panel textarea,
+html[class] body .admin-panel select {
+  background-color: #FFFFFF !important;
+  color: #4B5563 !important;
+  border-color: #D1D5DB !important;
+  box-shadow: none !important;
+}
+
+/* Input placeholders */
+html[class] body .admin-panel input::placeholder,
+html[class] body .admin-panel textarea::placeholder {
+  color: #9CA3AF !important;
+}
+
+/* Focus states */
+html[class] body .admin-panel input:focus,
+html[class] body .admin-panel textarea:focus,
+html[class] body .admin-panel select:focus {
+  border-color: #4F46E5 !important;
+  outline-color: #4F46E5 !important;
+  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.2) !important;
+}
+
+/* Image upload area */
+html[class] body .admin-panel .border-dashed {
+  background-color: #FFFFFF !important;
+  border-color: #D1D5DB !important;
+}
+
+/* Buttons */
+html[class] body .admin-panel button[type="button"]:not([class*="bg-"]),
+html[class] body .admin-panel button[type="submit"]:not([class*="bg-"]) {
+  background-color: #FFFFFF !important;
+  color: #4B5563 !important;
+  border-color: #D1D5DB !important;
+}
+
+/* Primary buttons */
+html[class] body .admin-panel button[type="submit"],
+html[class] body .admin-panel button[class*="bg-primary"] {
+  background-color: #4F46E5 !important;
+  color: #FFFFFF !important;
+}
+
+/* Select dropdown */
+html[class] body .admin-panel [role="combobox"] {
+  background-color: #FFFFFF !important;
+  color: #4B5563 !important;
+  border-color: #D1D5DB !important;
+}
+
+/* Select dropdown content */
+html[class] body .admin-panel [role="listbox"] {
+  background-color: #FFFFFF !important;
+  color: #4B5563 !important;
+  border-color: #D1D5DB !important;
+}
+
+/* Select dropdown items */
+html[class] body .admin-panel [role="option"] {
+  color: #4B5563 !important;
+}
+
+/* Select dropdown items hover */
+html[class] body .admin-panel [role="option"]:hover {
+  background-color: #F3F4F6 !important;
+}
+
+/* Force light mode for all admin panel elements */
+html[class] body .admin-panel * {
+  color-scheme: light !important;
+}
+
+/* Specific styles for blog and service forms */
+html[class] body .admin-panel form input,
+html[class] body .admin-panel form textarea,
+html[class] body .admin-panel form select {
+  background-color: #FFFFFF !important;
+  color: #4B5563 !important;
+  border-color: #D1D5DB !important;
+  box-shadow: none !important;
+}
+
+/* Blog post form and service form specific styles */
+html[class] body .admin-panel form [id*="title"],
+html[class] body .admin-panel form [id*="slug"],
+html[class] body .admin-panel form [id*="excerpt"],
+html[class] body .admin-panel form [id*="content"],
+html[class] body .admin-panel form [id*="description"] {
+  background-color: #FFFFFF !important;
+  color: #4B5563 !important;
+  border-color: #D1D5DB !important;
+}
+
+/* Image upload area in forms */
+html[class] body .admin-panel form .border-dashed,
+html[class] body .admin-panel form [class*="relative h-"] {
+  background-color: #FFFFFF !important;
+}

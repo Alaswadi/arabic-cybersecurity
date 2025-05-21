@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Upload, X, Image as ImageIcon } from "lucide-react"
+import { adminTheme } from "@/lib/admin-theme"
 
 interface LocalImageUploadProps {
   value: string
@@ -105,11 +106,14 @@ export function LocalImageUpload({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={`image-upload-${label}`}>{label}</Label>
+      <Label htmlFor={`image-upload-${label}`} style={{ color: adminTheme.colors.text.primary }}>{label}</Label>
 
       <div className="flex flex-col gap-4">
         {preview ? (
-          <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden">
+          <div className="relative w-full h-48 rounded-md overflow-hidden" style={{
+            backgroundColor: adminTheme.colors.background.card,
+            border: `1px solid ${adminTheme.colors.border.light}`
+          }}>
             {/* Use a regular img tag instead of Next.js Image component for more reliable previews */}
             <img
               src={`${preview}?t=${Date.now()}`} // Add cache-busting timestamp
@@ -133,7 +137,7 @@ export function LocalImageUpload({
                 console.log('Trying API path:', apiPath);
 
                 // Set a fallback color
-                e.currentTarget.style.backgroundColor = '#f0f0f0';
+                e.currentTarget.style.backgroundColor = adminTheme.colors.background.card;
                 e.currentTarget.style.display = 'flex';
                 e.currentTarget.style.alignItems = 'center';
                 e.currentTarget.style.justifyContent = 'center';
@@ -141,7 +145,7 @@ export function LocalImageUpload({
                 // Try again with the API path
                 e.currentTarget.src = apiPath;
               }}
-              style={{ background: '#f0f0f0' }} // Light gray background as fallback
+              style={{ background: adminTheme.colors.background.card }}
             />
             <Button
               type="button"
@@ -149,15 +153,22 @@ export function LocalImageUpload({
               size="icon"
               className="absolute top-2 right-2 h-8 w-8"
               onClick={handleRemoveImage}
+              style={{
+                backgroundColor: adminTheme.colors.status.danger,
+                color: 'white'
+              }}
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
         ) : (
-          <div className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
-            <ImageIcon className="h-12 w-12 text-gray-400 mb-2" />
-            <p className="text-sm text-gray-500 mb-2">اضغط لاختيار صورة أو اسحب الصورة هنا</p>
-            <p className="text-xs text-gray-400">PNG, JPG, GIF حتى 5MB</p>
+          <div className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center" style={{
+            borderColor: adminTheme.colors.border.light,
+            backgroundColor: adminTheme.colors.background.card
+          }}>
+            <ImageIcon className="h-12 w-12 mb-2" style={{ color: adminTheme.colors.text.muted }} />
+            <p className="text-sm mb-2" style={{ color: adminTheme.colors.text.secondary }}>اضغط لاختيار صورة أو اسحب الصورة هنا</p>
+            <p className="text-xs" style={{ color: adminTheme.colors.text.muted }}>PNG, JPG, GIF حتى 5MB</p>
           </div>
         )}
 
@@ -176,6 +187,11 @@ export function LocalImageUpload({
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
             className="flex-1"
+            style={{
+              backgroundColor: adminTheme.colors.background.card,
+              borderColor: adminTheme.colors.border.main,
+              color: adminTheme.colors.text.primary
+            }}
           >
             {isUploading ? (
               <span>جاري الرفع...</span>
@@ -192,12 +208,17 @@ export function LocalImageUpload({
               onChange={(e) => onChange(e.target.value)}
               placeholder="رابط الصورة"
               className="flex-1"
+              style={{
+                backgroundColor: adminTheme.colors.background.card,
+                borderColor: adminTheme.colors.border.main,
+                color: adminTheme.colors.text.primary
+              }}
             />
           )}
         </div>
 
-        {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
-        {helpText && <p className="text-sm text-gray-500">{helpText}</p>}
+        {uploadError && <p className="text-sm" style={{ color: adminTheme.colors.status.danger }}>{uploadError}</p>}
+        {helpText && <p className="text-sm" style={{ color: adminTheme.colors.text.muted }}>{helpText}</p>}
       </div>
     </div>
   )

@@ -11,6 +11,7 @@ import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, Phone, Trash, User 
 import { useToast } from "@/components/ui/use-toast"
 import { formatDistanceToNow } from "date-fns"
 import { ar } from "date-fns/locale"
+import { adminTheme } from "@/lib/admin-theme"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,13 +41,13 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
     setError(null)
     try {
       const response = await fetch(`/api/admin/messages?id=${params.id}`)
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch message")
       }
-      
+
       const data = await response.json()
-      
+
       if (data.messages && data.messages.length > 0) {
         setMessage(data.messages[0])
       } else {
@@ -62,7 +63,7 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
 
   useEffect(() => {
     fetchMessage()
-    
+
     // Mark as read when viewing details
     if (params.id) {
       markAsRead()
@@ -88,7 +89,7 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
 
   const handleToggleRead = async () => {
     if (!message) return
-    
+
     setIsActionLoading(true)
     try {
       const response = await fetch("/api/admin/messages", {
@@ -235,80 +236,161 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">تفاصيل الرسالة</h1>
-        <Button asChild variant="outline">
+      <div className="flex items-center justify-between mb-6" style={{
+        padding: adminTheme.spacing.lg,
+        backgroundColor: adminTheme.colors.background.card,
+        borderRadius: adminTheme.borderRadius.lg,
+        boxShadow: adminTheme.shadows.sm,
+        border: `1px solid ${adminTheme.colors.border.light}`
+      }}>
+        <h1 className="text-3xl font-bold" style={{ color: adminTheme.colors.primary.main }}>
+          تفاصيل الرسالة
+        </h1>
+        <Button
+          asChild
+          variant="outline"
+          style={{
+            borderColor: adminTheme.colors.primary.lighter,
+            color: adminTheme.colors.primary.main,
+            backgroundColor: 'transparent'
+          }}
+        >
           <Link href="/admin/messages">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 h-5 w-5" />
             العودة إلى قائمة الرسائل
           </Link>
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
+      <Card style={{
+        backgroundColor: adminTheme.colors.background.card,
+        boxShadow: adminTheme.shadows.sm,
+        border: `1px solid ${adminTheme.colors.border.light}`,
+        borderRadius: adminTheme.borderRadius.md
+      }}>
+        <CardHeader style={{
+          backgroundColor: adminTheme.colors.background.sidebar,
+          borderBottom: `1px solid ${adminTheme.colors.border.light}`
+        }}>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-2xl">{message.subject || "رسالة بدون موضوع"}</CardTitle>
-              <CardDescription>
-                {formattedDate.relative} ({formattedDate.full})
+              <CardTitle className="text-2xl" style={{ color: adminTheme.colors.text.primary }}>
+                {message.subject || "رسالة بدون موضوع"}
+              </CardTitle>
+              <CardDescription style={{ color: adminTheme.colors.text.secondary, marginTop: '0.25rem' }}>
+                <span style={{ fontWeight: adminTheme.typography.fontWeights.medium }}>
+                  {formattedDate.relative}
+                </span> ({formattedDate.full})
               </CardDescription>
             </div>
-            <Badge variant={message.read ? "outline" : "default"}>
+            <Badge
+              variant={message.read ? "outline" : "default"}
+              style={{
+                backgroundColor: message.read ? 'transparent' : adminTheme.colors.primary.main,
+                color: message.read ? adminTheme.colors.text.secondary : 'white',
+                borderColor: message.read ? adminTheme.colors.border.main : 'transparent'
+              }}
+            >
               {message.read ? "مقروءة" : "غير مقروءة"}
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex items-center gap-2">
-              <User className="h-5 w-5 text-gray-500" />
+            <div className="flex items-center gap-3 rounded-md" style={{
+              backgroundColor: adminTheme.colors.background.sidebar,
+              border: `1px solid ${adminTheme.colors.border.light}`,
+              padding: adminTheme.spacing.md,
+              borderRadius: adminTheme.borderRadius.md
+            }}>
+              <User className="h-6 w-6" style={{ color: adminTheme.colors.primary.main }} />
               <div>
-                <p className="text-sm text-gray-500">الاسم</p>
-                <p className="font-medium">{message.name}</p>
+                <p className="text-sm font-semibold" style={{ color: adminTheme.colors.text.secondary }}>الاسم</p>
+                <p className="font-medium" style={{ color: adminTheme.colors.text.primary }}>{message.name}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-5 w-5 text-gray-500" />
+            <div className="flex items-center gap-3 rounded-md" style={{
+              backgroundColor: adminTheme.colors.background.sidebar,
+              border: `1px solid ${adminTheme.colors.border.light}`,
+              padding: adminTheme.spacing.md,
+              borderRadius: adminTheme.borderRadius.md
+            }}>
+              <Mail className="h-6 w-6" style={{ color: adminTheme.colors.primary.main }} />
               <div>
-                <p className="text-sm text-gray-500">البريد الإلكتروني</p>
-                <p className="font-medium">{message.email}</p>
+                <p className="text-sm font-semibold" style={{ color: adminTheme.colors.text.secondary }}>البريد الإلكتروني</p>
+                <p className="font-medium" style={{ color: adminTheme.colors.text.primary }}>{message.email}</p>
               </div>
             </div>
             {message.phone && (
-              <div className="flex items-center gap-2">
-                <Phone className="h-5 w-5 text-gray-500" />
+              <div className="flex items-center gap-3 rounded-md" style={{
+                backgroundColor: adminTheme.colors.background.sidebar,
+                border: `1px solid ${adminTheme.colors.border.light}`,
+                padding: adminTheme.spacing.md,
+                borderRadius: adminTheme.borderRadius.md
+              }}>
+                <Phone className="h-6 w-6" style={{ color: adminTheme.colors.primary.main }} />
                 <div>
-                  <p className="text-sm text-gray-500">رقم الهاتف</p>
-                  <p className="font-medium">{message.phone}</p>
+                  <p className="text-sm font-semibold" style={{ color: adminTheme.colors.text.secondary }}>رقم الهاتف</p>
+                  <p className="font-medium" style={{ color: adminTheme.colors.text.primary }}>{message.phone}</p>
                 </div>
               </div>
             )}
           </div>
 
-          <Separator />
+          <Separator style={{ backgroundColor: adminTheme.colors.border.light }} />
 
           <div>
-            <h3 className="text-lg font-medium mb-2">الرسالة</h3>
-            <div className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap">
+            <h3 className="text-lg font-medium mb-3 flex items-center">
+              <span style={{
+                backgroundColor: adminTheme.colors.primary.lighter,
+                color: adminTheme.colors.primary.main,
+                padding: `${adminTheme.spacing.xs} ${adminTheme.spacing.md}`,
+                borderRadius: adminTheme.borderRadius.md,
+                display: 'inline-flex',
+                alignItems: 'center'
+              }}>
+                <Mail className="h-4 w-4 mr-1" />
+                الرسالة
+              </span>
+            </h3>
+            <div style={{
+              backgroundColor: adminTheme.colors.background.card,
+              padding: adminTheme.spacing.lg,
+              borderRadius: adminTheme.borderRadius.md,
+              whiteSpace: 'pre-wrap',
+              color: adminTheme.colors.text.primary,
+              border: `1px solid ${adminTheme.colors.border.light}`,
+              minHeight: '150px',
+              fontSize: adminTheme.typography.fontSizes.md,
+              boxShadow: adminTheme.shadows.sm
+            }}>
               {message.message}
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="flex justify-between p-4" style={{
+          backgroundColor: adminTheme.colors.background.sidebar,
+          borderTop: `1px solid ${adminTheme.colors.border.light}`
+        }}>
           <Button
             variant="outline"
             onClick={handleToggleRead}
             disabled={isActionLoading}
+            size="lg"
+            style={{
+              borderColor: adminTheme.colors.border.main,
+              color: adminTheme.colors.text.primary,
+              fontWeight: adminTheme.typography.fontWeights.medium
+            }}
           >
             {message.read ? (
               <>
-                <EyeOff className="mr-2 h-4 w-4" />
+                <EyeOff className="mr-2 h-5 w-5" style={{ color: adminTheme.colors.primary.main }} />
                 تحديد كغير مقروءة
               </>
             ) : (
               <>
-                <Eye className="mr-2 h-4 w-4" />
+                <Eye className="mr-2 h-5 w-5" style={{ color: adminTheme.colors.primary.main }} />
                 تحديد كمقروءة
               </>
             )}
@@ -317,27 +399,47 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
             variant="destructive"
             onClick={() => setIsDeleteDialogOpen(true)}
             disabled={isActionLoading}
+            size="lg"
+            style={{
+              backgroundColor: adminTheme.colors.status.danger,
+              color: 'white'
+            }}
           >
-            <Trash className="mr-2 h-4 w-4" />
+            <Trash className="mr-2 h-5 w-5" />
             حذف الرسالة
           </Button>
         </CardFooter>
       </Card>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent style={{
+          backgroundColor: adminTheme.colors.background.card,
+          border: `1px solid ${adminTheme.colors.border.light}`,
+          boxShadow: adminTheme.shadows.lg,
+          borderRadius: adminTheme.borderRadius.lg
+        }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>هل أنت متأكد من حذف هذه الرسالة؟</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle style={{ color: adminTheme.colors.text.primary }}>
+              هل أنت متأكد من حذف هذه الرسالة؟
+            </AlertDialogTitle>
+            <AlertDialogDescription style={{ color: adminTheme.colors.text.secondary }}>
               هذا الإجراء لا يمكن التراجع عنه. سيتم حذف الرسالة نهائياً من قاعدة البيانات.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction 
-              className="bg-red-600 hover:bg-red-700" 
+            <AlertDialogCancel style={{
+              borderColor: adminTheme.colors.border.main,
+              color: adminTheme.colors.text.primary
+            }}>
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleDelete}
               disabled={isActionLoading}
+              style={{
+                backgroundColor: adminTheme.colors.status.danger,
+                color: 'white'
+              }}
             >
               {isActionLoading ? "جاري الحذف..." : "حذف"}
             </AlertDialogAction>

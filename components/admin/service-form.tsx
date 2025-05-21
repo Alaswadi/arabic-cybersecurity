@@ -17,6 +17,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LocalImageUpload } from "@/components/ui/local-image-upload"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { adminTheme } from "@/lib/admin-theme"
 
 type Service = Database["public"]["Tables"]["services"]["Row"]
 
@@ -108,46 +109,85 @@ export function ServiceForm({ service }: { service?: Service }) {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <Card style={{
+      backgroundColor: adminTheme.colors.background.card,
+      boxShadow: adminTheme.shadows.sm,
+      border: `1px solid ${adminTheme.colors.border.light}`,
+      borderRadius: adminTheme.borderRadius.md
+    }}>
+      <CardContent className="pt-6" style={{ backgroundColor: '#FFFFFF' }}>
         {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
+          <Alert
+            variant="destructive"
+            className="mb-6"
+            style={{
+              backgroundColor: '#FEF2F2',
+              border: '1px solid #FEE2E2',
+              borderRadius: adminTheme.borderRadius.md
+            }}
+          >
+            <AlertCircle className="h-4 w-4" style={{ color: adminTheme.colors.status.danger }} />
+            <AlertDescription style={{ color: '#B91C1C' }}>{error}</AlertDescription>
           </Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">عنوان الخدمة</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <Label htmlFor="title" style={{ color: adminTheme.colors.text.primary }}>عنوان الخدمة</Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              style={{
+                backgroundColor: '#FFFFFF !important',
+                borderColor: `${adminTheme.colors.border.main} !important`,
+                color: `${adminTheme.colors.text.primary} !important`
+              }}
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="icon">الأيقونة</Label>
+            <Label htmlFor="icon" style={{ color: adminTheme.colors.text.primary }}>الأيقونة</Label>
             <Select value={icon} onValueChange={setIcon}>
-              <SelectTrigger>
+              <SelectTrigger style={{
+                borderColor: `${adminTheme.colors.border.main} !important`,
+                color: `${adminTheme.colors.text.primary} !important`,
+                backgroundColor: '#FFFFFF !important'
+              }}>
                 <SelectValue placeholder="اختر أيقونة" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent style={{
+                backgroundColor: '#FFFFFF !important',
+                borderColor: `${adminTheme.colors.border.main} !important`
+              }}>
                 {availableIcons.map((iconName) => (
-                  <SelectItem key={iconName} value={iconName}>
+                  <SelectItem
+                    key={iconName}
+                    value={iconName}
+                    style={{ color: adminTheme.colors.text.primary }}
+                  >
                     {iconName}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-sm text-gray-500">اختر الأيقونة المناسبة للخدمة</p>
+            <p className="text-sm" style={{ color: adminTheme.colors.text.muted }}>اختر الأيقونة المناسبة للخدمة</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">وصف الخدمة</Label>
+            <Label htmlFor="description" style={{ color: adminTheme.colors.text.primary }}>وصف الخدمة</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
               rows={5}
+              style={{
+                backgroundColor: '#FFFFFF !important',
+                borderColor: `${adminTheme.colors.border.main} !important`,
+                color: `${adminTheme.colors.text.primary} !important`
+              }}
             />
           </div>
 
@@ -179,13 +219,27 @@ export function ServiceForm({ service }: { service?: Service }) {
 
           <div className="flex items-center justify-between">
             <Link href="/admin/services">
-              <Button type="button" variant="outline">
+              <Button
+                type="button"
+                variant="outline"
+                style={{
+                  borderColor: adminTheme.colors.border.main,
+                  color: adminTheme.colors.text.primary
+                }}
+              >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 رجوع
               </Button>
             </Link>
 
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              style={{
+                backgroundColor: adminTheme.colors.primary.main,
+                color: 'white'
+              }}
+            >
               {loading
                 ? isEditing
                   ? "جاري التحديث..."

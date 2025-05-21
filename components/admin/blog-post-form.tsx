@@ -17,6 +17,7 @@ import { AlertCircle, ArrowLeft } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LocalImageUpload } from "@/components/ui/local-image-upload"
 import Link from "next/link"
+import { adminTheme } from "@/lib/admin-theme"
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"]
 
@@ -110,18 +111,31 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <Card style={{
+      backgroundColor: adminTheme.colors.background.card,
+      boxShadow: adminTheme.shadows.sm,
+      border: `1px solid ${adminTheme.colors.border.light}`,
+      borderRadius: adminTheme.borderRadius.md
+    }}>
+      <CardContent className="pt-6" style={{ backgroundColor: '#FFFFFF' }}>
         {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
+          <Alert
+            variant="destructive"
+            className="mb-6"
+            style={{
+              backgroundColor: '#FEF2F2',
+              border: '1px solid #FEE2E2',
+              borderRadius: adminTheme.borderRadius.md
+            }}
+          >
+            <AlertCircle className="h-4 w-4" style={{ color: adminTheme.colors.status.danger }} />
+            <AlertDescription style={{ color: '#B91C1C' }}>{error}</AlertDescription>
           </Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">عنوان المقال</Label>
+            <Label htmlFor="title" style={{ color: adminTheme.colors.text.primary }}>عنوان المقال</Label>
             <Input
               id="title"
               value={title}
@@ -132,23 +146,57 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
                 }
               }}
               required
+              style={{
+                backgroundColor: '#FFFFFF !important',
+                borderColor: `${adminTheme.colors.border.main} !important`,
+                color: `${adminTheme.colors.text.primary} !important`
+              }}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slug">الرابط (Slug)</Label>
+            <Label htmlFor="slug" style={{ color: adminTheme.colors.text.primary }}>الرابط (Slug)</Label>
             <div className="flex gap-2">
-              <Input id="slug" value={slug} onChange={(e) => setSlug(e.target.value)} required className="flex-1" />
-              <Button type="button" variant="outline" onClick={generateSlug}>
+              <Input
+                id="slug"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                required
+                className="flex-1"
+                style={{
+                  backgroundColor: '#FFFFFF !important',
+                  borderColor: `${adminTheme.colors.border.main} !important`,
+                  color: `${adminTheme.colors.text.primary} !important`
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={generateSlug}
+                style={{
+                  borderColor: adminTheme.colors.border.main,
+                  color: adminTheme.colors.text.primary
+                }}
+              >
                 إنشاء تلقائي
               </Button>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="excerpt">مقتطف المقال</Label>
-            <Textarea id="excerpt" value={excerpt} onChange={(e) => setExcerpt(e.target.value)} rows={2} />
-            <p className="text-sm text-gray-500">ملخص قصير للمقال يظهر في صفحة المقالات (اختياري)</p>
+            <Label htmlFor="excerpt" style={{ color: adminTheme.colors.text.primary }}>مقتطف المقال</Label>
+            <Textarea
+              id="excerpt"
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              rows={2}
+              style={{
+                backgroundColor: '#FFFFFF !important',
+                borderColor: `${adminTheme.colors.border.main} !important`,
+                color: `${adminTheme.colors.text.primary} !important`
+              }}
+            />
+            <p className="text-sm" style={{ color: adminTheme.colors.text.muted }}>ملخص قصير للمقال يظهر في صفحة المقالات (اختياري)</p>
           </div>
 
           <LocalImageUpload
@@ -178,24 +226,56 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
           />
 
           <div className="space-y-2">
-            <Label htmlFor="content">محتوى المقال</Label>
-            <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required rows={10} />
+            <Label htmlFor="content" style={{ color: adminTheme.colors.text.primary }}>محتوى المقال</Label>
+            <Textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              required
+              rows={10}
+              style={{
+                backgroundColor: '#FFFFFF !important',
+                borderColor: `${adminTheme.colors.border.main} !important`,
+                color: `${adminTheme.colors.text.primary} !important`
+              }}
+            />
           </div>
 
           <div className="flex items-center space-x-2 space-x-reverse">
-            <Switch id="published" checked={published} onCheckedChange={setPublished} />
-            <Label htmlFor="published">نشر المقال</Label>
+            <Switch
+              id="published"
+              checked={published}
+              onCheckedChange={setPublished}
+              style={{
+                backgroundColor: published ? adminTheme.colors.primary.main : undefined
+              }}
+            />
+            <Label htmlFor="published" style={{ color: adminTheme.colors.text.primary }}>نشر المقال</Label>
           </div>
 
           <div className="flex items-center justify-between">
             <Link href="/admin/blog">
-              <Button type="button" variant="outline">
+              <Button
+                type="button"
+                variant="outline"
+                style={{
+                  borderColor: adminTheme.colors.border.main,
+                  color: adminTheme.colors.text.primary
+                }}
+              >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 رجوع
               </Button>
             </Link>
 
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              style={{
+                backgroundColor: adminTheme.colors.primary.main,
+                color: 'white'
+              }}
+            >
               {loading
                 ? isEditing
                   ? "جاري التحديث..."

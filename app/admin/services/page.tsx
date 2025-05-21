@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { ServicesTable } from "@/components/admin/services-table"
+import { adminTheme } from "@/lib/admin-theme"
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic'
@@ -24,10 +25,21 @@ export default async function ServicesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">إدارة الخدمات</h1>
+      <div className="flex items-center justify-between mb-6" style={{
+        padding: adminTheme.spacing.lg,
+        backgroundColor: adminTheme.colors.background.card,
+        borderRadius: adminTheme.borderRadius.lg,
+        boxShadow: adminTheme.shadows.sm,
+        border: `1px solid ${adminTheme.colors.border.light}`
+      }}>
+        <h1 className="text-3xl font-bold" style={{ color: adminTheme.colors.primary.main }}>
+          إدارة الخدمات
+        </h1>
         <Link href="/admin/services/new">
-          <Button>
+          <Button style={{
+            backgroundColor: adminTheme.colors.primary.main,
+            color: 'white'
+          }}>
             <PlusCircle className="mr-2 h-4 w-4" />
             إضافة خدمة جديدة
           </Button>

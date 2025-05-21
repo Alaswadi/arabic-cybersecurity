@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound, redirect } from "next/navigation"
 import { ServiceForm } from "@/components/admin/service-form"
+import { adminTheme } from "@/lib/admin-theme"
 
 // Simple UUID validation regex
 const isValidUUID = (uuid: string) => {
@@ -36,7 +37,12 @@ export default async function EditServicePage(
 
     return (
       <div>
-        <h1 className="text-3xl font-bold mb-6">تعديل الخدمة</h1>
+        <h1
+          className="text-3xl font-bold mb-6"
+          style={{ color: adminTheme.colors.primary.main }}
+        >
+          تعديل الخدمة
+        </h1>
         <ServiceForm service={service} />
       </div>
     )

@@ -21,6 +21,7 @@ import {
 import { Edit, MoreHorizontal, Trash } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { FallbackImage } from "@/components/ui/fallback-image"
+import { adminTheme } from "@/lib/admin-theme"
 
 type Service = Database["public"]["Tables"]["services"]["Row"]
 
@@ -56,32 +57,51 @@ export function ServicesTable({ services }: { services: Service[] }) {
 
   return (
     <>
-      <div className="rounded-md border">
+      <div style={{
+        borderRadius: adminTheme.borderRadius.md,
+        border: `1px solid ${adminTheme.colors.border.light}`,
+        overflow: 'hidden',
+        boxShadow: adminTheme.shadows.sm
+      }}>
         <Table>
-          <TableHeader>
+          <TableHeader style={{ backgroundColor: adminTheme.colors.background.sidebar }}>
             <TableRow>
-              <TableHead>العنوان</TableHead>
-              <TableHead>الأيقونة</TableHead>
-              <TableHead>الصورة</TableHead>
-              <TableHead>تاريخ الإنشاء</TableHead>
-              <TableHead className="w-[100px]">الإجراءات</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>العنوان</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الأيقونة</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الصورة</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>تاريخ الإنشاء</TableHead>
+              <TableHead className="w-[100px]" style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الإجراءات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {services.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center">
+                <TableCell colSpan={5} style={{
+                  textAlign: 'center',
+                  color: adminTheme.colors.text.secondary,
+                  padding: adminTheme.spacing.xl
+                }}>
                   لا توجد خدمات
                 </TableCell>
               </TableRow>
             ) : (
               services.map((service) => (
-                <TableRow key={service.id}>
-                  <TableCell className="font-medium">{service.title}</TableCell>
-                  <TableCell>{service.icon}</TableCell>
+                <TableRow key={service.id} style={{
+                  backgroundColor: adminTheme.colors.background.card,
+                  borderBottom: `1px solid ${adminTheme.colors.border.light}`
+                }}>
+                  <TableCell style={{
+                    fontWeight: adminTheme.typography.fontWeights.medium,
+                    color: adminTheme.colors.text.primary
+                  }}>
+                    {service.title}
+                  </TableCell>
+                  <TableCell style={{ color: adminTheme.colors.text.secondary }}>{service.icon}</TableCell>
                   <TableCell>
                     {service.image ? (
-                      <div className="relative h-10 w-10 rounded overflow-hidden">
+                      <div className="relative h-10 w-10 rounded overflow-hidden" style={{
+                        border: `1px solid ${adminTheme.colors.border.light}`
+                      }}>
                         <FallbackImage
                           src={service.image}
                           alt={service.title}
@@ -89,31 +109,44 @@ export function ServicesTable({ services }: { services: Service[] }) {
                         />
                       </div>
                     ) : (
-                      <span className="text-gray-400">-</span>
+                      <span style={{ color: adminTheme.colors.text.muted }}>-</span>
                     )}
                   </TableCell>
-                  <TableCell>{new Date(service.created_at).toLocaleDateString("ar-SA")}</TableCell>
+                  <TableCell style={{ color: adminTheme.colors.text.secondary }}>
+                    {new Date(service.created_at).toLocaleDateString("ar-SA")}
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          style={{ color: adminTheme.colors.text.secondary }}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">فتح القائمة</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent
+                        align="end"
+                        style={{
+                          backgroundColor: adminTheme.colors.background.card,
+                          border: `1px solid ${adminTheme.colors.border.light}`,
+                          boxShadow: adminTheme.shadows.md
+                        }}
+                      >
                         <Link href={`/admin/services/${service.id}`}>
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
+                          <DropdownMenuItem style={{ color: adminTheme.colors.text.primary }}>
+                            <Edit className="mr-2 h-4 w-4" style={{ color: adminTheme.colors.primary.main }} />
                             تعديل
                           </DropdownMenuItem>
                         </Link>
                         <DropdownMenuItem
-                          className="text-red-600"
                           onClick={() => {
                             setServiceToDelete(service)
                             setIsDeleteDialogOpen(true)
                           }}
+                          style={{ color: adminTheme.colors.status.danger }}
                         >
                           <Trash className="mr-2 h-4 w-4" />
                           حذف
@@ -129,16 +162,34 @@ export function ServicesTable({ services }: { services: Service[] }) {
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent style={{
+          backgroundColor: adminTheme.colors.background.card,
+          border: `1px solid ${adminTheme.colors.border.light}`,
+          boxShadow: adminTheme.shadows.lg,
+          borderRadius: adminTheme.borderRadius.lg
+        }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>هل أنت متأكد من حذف هذه الخدمة؟</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle style={{ color: adminTheme.colors.text.primary }}>
+              هل أنت متأكد من حذف هذه الخدمة؟
+            </AlertDialogTitle>
+            <AlertDialogDescription style={{ color: adminTheme.colors.text.secondary }}>
               هذا الإجراء لا يمكن التراجع عنه. سيتم حذف الخدمة نهائياً من قاعدة البيانات.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>
+            <AlertDialogCancel style={{
+              borderColor: adminTheme.colors.border.main,
+              color: adminTheme.colors.text.primary
+            }}>
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              style={{
+                backgroundColor: adminTheme.colors.status.danger,
+                color: 'white'
+              }}
+            >
               حذف
             </AlertDialogAction>
           </AlertDialogFooter>

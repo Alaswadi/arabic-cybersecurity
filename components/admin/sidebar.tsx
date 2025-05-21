@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { LayoutDashboard, Settings, FileText, LogOut, Menu, X, Database, TableProperties, MessageSquare } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { adminTheme } from "@/lib/admin-theme"
 
 export function AdminSidebar() {
   const pathname = usePathname()
@@ -57,7 +58,16 @@ export function AdminSidebar() {
     <>
       {/* Mobile menu button */}
       <div className="fixed top-4 left-4 z-40 md:hidden">
-        <Button variant="outline" size="icon" onClick={() => setIsOpen(!isOpen)}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            backgroundColor: adminTheme.colors.background.card,
+            borderColor: adminTheme.colors.border.light,
+            color: adminTheme.colors.text.primary
+          }}
+        >
           {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
@@ -65,37 +75,65 @@ export function AdminSidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-30 w-64 transform bg-white shadow-lg transition-transform duration-200 ease-in-out md:relative md:translate-x-0 border-r border-gray-200",
+          "fixed inset-y-0 left-0 z-30 w-64 transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
+        style={{
+          backgroundColor: adminTheme.colors.background.sidebar,
+          borderRight: `1px solid ${adminTheme.colors.border.light}`,
+          boxShadow: adminTheme.shadows.sm
+        }}
       >
         <div className="flex h-full flex-col">
-          <div className="flex h-16 items-center border-b px-6">
-            <h2 className="text-lg font-bold">لوحة التحكم</h2>
+          <div className="flex h-16 items-center px-6" style={{
+            borderBottom: `1px solid ${adminTheme.colors.border.light}`
+          }}>
+            <h2 className="text-lg font-semibold" style={{
+              color: adminTheme.colors.primary.main
+            }}>لوحة التحكم</h2>
           </div>
 
           <div className="flex-1 overflow-y-auto py-4">
             <nav className="space-y-1 px-3">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center rounded-md px-3 py-2 text-sm font-medium",
-                    pathname === item.href ? "bg-purple-100 text-purple-700" : "text-gray-700 hover:bg-gray-100",
-                  )}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.title}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150",
+                    )}
+                    style={{
+                      backgroundColor: isActive ? adminTheme.colors.primary.lighter : 'transparent',
+                      color: isActive ? adminTheme.colors.primary.main : adminTheme.colors.text.secondary
+                    }}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <item.icon className="mr-3 h-5 w-5" style={{
+                      color: isActive ? adminTheme.colors.primary.main : adminTheme.colors.text.muted
+                    }} />
+                    {item.title}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 
-          <div className="border-t p-4">
-            <Button variant="outline" className="w-full justify-start border-gray-200 hover:bg-gray-100 hover:text-purple-700" onClick={handleSignOut}>
-              <LogOut className="mr-2 h-4 w-4" />
+          <div className="p-4" style={{
+            borderTop: `1px solid ${adminTheme.colors.border.light}`
+          }}>
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              style={{
+                color: adminTheme.colors.status.danger,
+                borderColor: adminTheme.colors.border.light,
+                backgroundColor: 'transparent'
+              }}
+              onClick={handleSignOut}
+            >
+              <LogOut className="mr-2 h-5 w-5" />
               تسجيل الخروج
             </Button>
           </div>
@@ -103,7 +141,13 @@ export function AdminSidebar() {
       </div>
 
       {/* Overlay */}
-      {isOpen && <div className="fixed inset-0 z-20 bg-black/50 md:hidden" onClick={() => setIsOpen(false)} />}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-20 md:hidden"
+          onClick={() => setIsOpen(false)}
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
+        />
+      )}
     </>
   )
 }

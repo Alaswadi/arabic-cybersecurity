@@ -22,6 +22,7 @@ import { Eye, EyeOff, MoreHorizontal, Trash } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { formatDistanceToNow } from "date-fns"
 import { ar } from "date-fns/locale"
+import { adminTheme } from "@/lib/admin-theme"
 
 type ContactMessage = Database["public"]["Tables"]["contact_messages"]["Row"]
 
@@ -39,6 +40,13 @@ export function MessagesTable({ messages, onRefresh }: MessagesTableProps) {
 
   const handleToggleRead = async (message: ContactMessage) => {
     setIsLoading(true)
+
+    // Show immediate feedback toast
+    const loadingToastId = toast({
+      title: "جاري التحديث...",
+      description: message.read ? "جاري تحديد الرسالة كغير مقروءة" : "جاري تحديد الرسالة كمقروءة",
+    })
+
     try {
       const response = await fetch("/api/admin/messages", {
         method: "PATCH",
@@ -57,9 +65,13 @@ export function MessagesTable({ messages, onRefresh }: MessagesTableProps) {
         toast({
           title: message.read ? "تم تحديد الرسالة كغير مقروءة" : "تم تحديد الرسالة كمقروءة",
           description: "تم تحديث حالة الرسالة بنجاح",
+          variant: "success",
         })
+
+        // Refresh the messages list to show the updated status
         onRefresh()
       } else {
+        console.error("Error response:", data)
         toast({
           title: "خطأ",
           description: data.error || "حدث خطأ أثناء تحديث حالة الرسالة",
@@ -82,22 +94,35 @@ export function MessagesTable({ messages, onRefresh }: MessagesTableProps) {
     if (!messageToDelete) return
 
     setIsLoading(true)
+
+    // Show immediate feedback toast
+    const loadingToastId = toast({
+      title: "جاري الحذف...",
+      description: "جاري حذف الرسالة",
+    })
+
     try {
+      console.log(`Deleting message with ID: ${messageToDelete.id}`);
       const response = await fetch(`/api/admin/messages?id=${messageToDelete.id}`, {
         method: "DELETE",
       })
 
       const data = await response.json()
+      console.log("Delete response:", data);
 
       if (response.ok && data.success) {
         toast({
           title: "تم الحذف",
           description: "تم حذف الرسالة بنجاح",
+          variant: "success",
         })
         setMessageToDelete(null)
         setIsDeleteDialogOpen(false)
+
+        // Refresh the messages list to remove the deleted message
         onRefresh()
       } else {
+        console.error("Error response:", data);
         toast({
           title: "خطأ",
           description: data.error || "حدث خطأ أثناء حذف الرسالة",
@@ -134,78 +159,116 @@ export function MessagesTable({ messages, onRefresh }: MessagesTableProps) {
 
   return (
     <>
-      <div className="rounded-md border">
+      <div style={{
+        borderRadius: adminTheme.borderRadius.md,
+        border: `1px solid ${adminTheme.colors.border.light}`,
+        overflow: 'hidden',
+        boxShadow: adminTheme.shadows.sm
+      }}>
         <Table>
-          <TableHeader>
+          <TableHeader style={{ backgroundColor: adminTheme.colors.background.sidebar }}>
             <TableRow>
-              <TableHead>الاسم</TableHead>
-              <TableHead>البريد الإلكتروني</TableHead>
-              <TableHead>الموضوع</TableHead>
-              <TableHead>الرسالة</TableHead>
-              <TableHead>التاريخ</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="w-[100px]">الإجراءات</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الاسم</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>البريد الإلكتروني</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الموضوع</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الرسالة</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>التاريخ</TableHead>
+              <TableHead style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الحالة</TableHead>
+              <TableHead className="w-[100px]" style={{ color: adminTheme.colors.text.primary, fontWeight: adminTheme.typography.fontWeights.medium }}>الإجراءات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {messages.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center">
+                <TableCell colSpan={7} style={{
+                  textAlign: 'center',
+                  color: adminTheme.colors.text.secondary,
+                  padding: adminTheme.spacing.xl
+                }}>
                   لا توجد رسائل
                 </TableCell>
               </TableRow>
             ) : (
               messages.map((message) => (
-                <TableRow 
-                  key={message.id} 
-                  className={message.read ? "" : "bg-blue-50 dark:bg-blue-900/10"}
+                <TableRow
+                  key={message.id}
+                  style={{
+                    backgroundColor: message.read ? adminTheme.colors.background.card : adminTheme.colors.primary.lighter,
+                    borderBottom: `1px solid ${adminTheme.colors.border.light}`
+                  }}
                 >
-                  <TableCell className="font-medium">{message.name}</TableCell>
-                  <TableCell>{message.email}</TableCell>
-                  <TableCell>{message.subject || "-"}</TableCell>
-                  <TableCell>{truncateText(message.message, 50)}</TableCell>
-                  <TableCell>{formatDate(message.created_at)}</TableCell>
+                  <TableCell style={{
+                    fontWeight: adminTheme.typography.fontWeights.medium,
+                    color: adminTheme.colors.text.primary
+                  }}>
+                    {message.name}
+                  </TableCell>
+                  <TableCell style={{ color: adminTheme.colors.text.secondary }}>{message.email}</TableCell>
+                  <TableCell style={{ color: adminTheme.colors.text.secondary }}>{message.subject || "-"}</TableCell>
+                  <TableCell style={{ color: adminTheme.colors.text.secondary }}>{truncateText(message.message, 50)}</TableCell>
+                  <TableCell style={{ color: adminTheme.colors.text.secondary }}>{formatDate(message.created_at)}</TableCell>
                   <TableCell>
-                    <Badge variant={message.read ? "outline" : "default"}>
+                    <Badge
+                      variant={message.read ? "outline" : "default"}
+                      style={{
+                        backgroundColor: message.read ? 'transparent' : adminTheme.colors.primary.main,
+                        color: message.read ? adminTheme.colors.text.secondary : 'white',
+                        borderColor: message.read ? adminTheme.colors.border.main : 'transparent'
+                      }}
+                    >
                       {message.read ? "مقروءة" : "غير مقروءة"}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" disabled={isLoading}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={isLoading}
+                          style={{ color: adminTheme.colors.text.secondary }}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">فتح القائمة</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent
+                        align="end"
+                        style={{
+                          backgroundColor: adminTheme.colors.background.card,
+                          border: `1px solid ${adminTheme.colors.border.light}`,
+                          boxShadow: adminTheme.shadows.md
+                        }}
+                      >
                         <DropdownMenuItem
                           onClick={() => router.push(`/admin/messages/${message.id}`)}
+                          style={{ color: adminTheme.colors.text.primary }}
                         >
-                          <Eye className="mr-2 h-4 w-4" />
+                          <Eye className="mr-2 h-4 w-4" style={{ color: adminTheme.colors.primary.main }} />
                           عرض التفاصيل
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleToggleRead(message)}
+                          style={{ color: adminTheme.colors.text.primary }}
                         >
                           {message.read ? (
                             <>
-                              <EyeOff className="mr-2 h-4 w-4" />
+                              <EyeOff className="mr-2 h-4 w-4" style={{ color: adminTheme.colors.primary.main }} />
                               تحديد كغير مقروءة
                             </>
                           ) : (
                             <>
-                              <Eye className="mr-2 h-4 w-4" />
+                              <Eye className="mr-2 h-4 w-4" style={{ color: adminTheme.colors.primary.main }} />
                               تحديد كمقروءة
                             </>
                           )}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-red-600"
                           onClick={() => {
                             setMessageToDelete(message)
                             setIsDeleteDialogOpen(true)
                           }}
+                          style={{ color: adminTheme.colors.status.danger }}
                         >
                           <Trash className="mr-2 h-4 w-4" />
                           حذف
@@ -221,19 +284,34 @@ export function MessagesTable({ messages, onRefresh }: MessagesTableProps) {
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent style={{
+          backgroundColor: adminTheme.colors.background.card,
+          border: `1px solid ${adminTheme.colors.border.light}`,
+          boxShadow: adminTheme.shadows.lg,
+          borderRadius: adminTheme.borderRadius.lg
+        }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>هل أنت متأكد من حذف هذه الرسالة؟</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle style={{ color: adminTheme.colors.text.primary }}>
+              هل أنت متأكد من حذف هذه الرسالة؟
+            </AlertDialogTitle>
+            <AlertDialogDescription style={{ color: adminTheme.colors.text.secondary }}>
               هذا الإجراء لا يمكن التراجع عنه. سيتم حذف الرسالة نهائياً من قاعدة البيانات.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
-            <AlertDialogAction 
-              className="bg-red-600 hover:bg-red-700" 
+            <AlertDialogCancel style={{
+              borderColor: adminTheme.colors.border.main,
+              color: adminTheme.colors.text.primary
+            }}>
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleDelete}
               disabled={isLoading}
+              style={{
+                backgroundColor: adminTheme.colors.status.danger,
+                color: 'white'
+              }}
             >
               {isLoading ? "جاري الحذف..." : "حذف"}
             </AlertDialogAction>

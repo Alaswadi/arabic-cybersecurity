@@ -22,10 +22,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Check if the current path is admin
+  const isAdmin = typeof window !== 'undefined' ? window.location.pathname.startsWith('/admin') : false;
+
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body className={cairo.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme={isAdmin ? "light" : "dark"} enableSystem disableTransitionOnChange>
           {children}
           <Toaster />
         </ThemeProvider>
