@@ -35,24 +35,42 @@ export function ServicesTable({ services }: { services: Service[] }) {
   const handleDelete = async () => {
     if (!serviceToDelete) return
 
-    const { error } = await supabase.from("services").delete().eq("id", serviceToDelete.id)
+    try {
+      console.log("Deleting service with ID:", serviceToDelete.id);
 
-    if (error) {
+      // Use the API route to delete the service
+      const response = await fetch(`/api/admin/services/${serviceToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+      console.log("Delete response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "حدث خطأ أثناء حذف الخدمة");
+      }
+
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف الخدمة بنجاح",
+      });
+
+      // Force a server refresh
+      await fetch('/api/revalidate?path=/admin/services', { method: 'POST' });
+
+      // Add a small delay before refreshing
+      setTimeout(() => {
+        router.refresh();
+        setServiceToDelete(null);
+      }, 500);
+    } catch (error: any) {
+      console.error("Error deleting service:", error);
       toast({
         title: "خطأ",
-        description: "حدث خطأ أثناء حذف الخدمة",
+        description: error.message || "حدث خطأ أثناء حذف الخدمة",
         variant: "destructive",
-      })
-      return
+      });
     }
-
-    toast({
-      title: "تم الحذف",
-      description: "تم حذف الخدمة بنجاح",
-    })
-
-    router.refresh()
-    setServiceToDelete(null)
   }
 
   return (

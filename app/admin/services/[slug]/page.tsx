@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { notFound, redirect } from "next/navigation"
 import { ServiceForm } from "@/components/admin/service-form"
 import { adminTheme } from "@/lib/admin-theme"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 // Simple UUID validation regex
 const isValidUUID = (uuid: string) => {
@@ -25,10 +26,26 @@ export default async function EditServicePage(
     notFound()
   }
 
-  const supabase = createClient()
-
   try {
-    const { data: service, error } = await supabase.from("services").select("*").eq("id", params.slug).single()
+    // Create a service role client to bypass RLS
+    let serviceRoleClient;
+    try {
+      serviceRoleClient = createAdminClient();
+      console.log("Successfully created service role client for service detail page");
+    } catch (error) {
+      console.error("Error creating service role client:", error);
+
+      // Fallback to regular client
+      serviceRoleClient = createClient();
+      console.log("Falling back to regular client for service detail page");
+    }
+
+    // Fetch the service
+    const { data: service, error } = await serviceRoleClient
+      .from("services")
+      .select("*")
+      .eq("id", params.slug)
+      .single();
 
     if (error || !service) {
       console.error("Error fetching service:", error)

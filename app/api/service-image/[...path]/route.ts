@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { serveImage } from '@/lib/image-utils';
 import { join } from 'path';
 import { readFile } from 'fs/promises';
 import { existsSync, statSync } from 'fs';
@@ -44,13 +43,16 @@ export async function GET(
     const url = new URL(request.url);
 
     // Extract the path from the URL pathname
-    // The pathname will be something like /api/image/blog/image.jpg
+    // The pathname will be something like /api/service-image/image.jpg
     const pathname = url.pathname;
 
-    // Remove the /api/image prefix to get the actual image path
-    const imagePath = pathname.replace(/^\/api\/image\//, '');
+    // Remove the /api/service-image prefix to get the actual image path
+    const imageName = pathname.replace(/^\/api\/service-image\//, '');
 
-    console.log(`API Image request for: ${imagePath}`);
+    // Prepend 'services/' to the path
+    const imagePath = `services/${imageName}`;
+
+    console.log(`API Service Image request for: ${imagePath}`);
 
     // Construct the full path to the image
     const fullPath = join(process.cwd(), 'public', 'uploads', imagePath);
@@ -58,7 +60,7 @@ export async function GET(
 
     // Check if the file exists
     if (!existsSync(fullPath)) {
-      console.error(`Image not found: ${fullPath}`);
+      console.error(`Service image not found: ${fullPath}`);
       return new NextResponse('Image not found', { status: 404 });
     }
 
@@ -75,8 +77,8 @@ export async function GET(
     console.log(`Successfully read file with size: ${fileBuffer.length} bytes`);
 
     // Determine the content type
-    const contentType = getContentType(imagePath);
-    console.log(`Serving image with content type: ${contentType}`);
+    const contentType = getContentType(imageName);
+    console.log(`Serving service image with content type: ${contentType}`);
 
     // Return the image with appropriate headers
     return new NextResponse(fileBuffer, {
@@ -87,7 +89,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Error in image route handler:', error);
+    console.error('Error in service image route handler:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

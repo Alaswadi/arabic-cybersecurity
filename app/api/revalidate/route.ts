@@ -5,8 +5,11 @@ import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const supabaseAuth = createServerComponentClient({ cookies })
+    // Check authentication - properly await cookies()
+    const cookieStore = cookies();
+    const supabaseAuth = createServerComponentClient({
+      cookies: () => cookieStore
+    });
     const { data: { session } } = await supabaseAuth.auth.getSession()
 
     if (!session) {

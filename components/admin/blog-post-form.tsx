@@ -54,10 +54,14 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
 
     try {
       if (isEditing) {
-        // Update existing post
-        const { error } = await supabase
-          .from("blog_posts")
-          .update({
+        // Update existing post using the API route
+        const response = await fetch('/api/admin/blog-posts', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: post.id,
             title,
             slug,
             content,
@@ -65,48 +69,74 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
             featured_image: featuredImage,
             published,
             published_at: published ? post?.published_at || new Date().toISOString() : null,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", post.id)
+          }),
+        });
 
-        if (error) throw error
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "حدث خطأ أثناء تحديث المقال");
+        }
+
+        console.log("Blog post updated successfully:", data);
 
         toast({
           title: "تم التحديث",
           description: "تم تحديث المقال بنجاح",
-        })
+        });
       } else {
-        // Create new post
-        const { error } = await supabase.from("blog_posts").insert({
+        // Create new post using the API route
+        console.log("Creating new blog post with data:", {
           title,
           slug,
           content,
           excerpt,
           featured_image: featuredImage,
           published,
-          published_at: published ? new Date().toISOString() : null,
-        })
+        });
 
-        if (error) throw error
+        const response = await fetch('/api/admin/blog-posts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title,
+            slug,
+            content,
+            excerpt,
+            featured_image: featuredImage,
+            published,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "حدث خطأ أثناء إضافة المقال");
+        }
+
+        console.log("Blog post created successfully:", data);
 
         toast({
           title: "تمت الإضافة",
           description: "تم إضافة المقال بنجاح",
-        })
+        });
       }
 
       // Force a server refresh before redirecting
-      await fetch('/api/revalidate?path=/admin/blog', { method: 'POST' })
+      await fetch('/api/revalidate?path=/admin/blog', { method: 'POST' });
 
       // Add a small delay before redirecting to ensure revalidation completes
       setTimeout(() => {
-        router.push("/admin/blog")
-        router.refresh()
-      }, 500)
+        router.push("/admin/blog");
+        router.refresh();
+      }, 500);
     } catch (err: any) {
-      setError(err.message || "حدث خطأ أثناء حفظ المقال")
+      console.error("Error saving blog post:", err);
+      setError(err.message || "حدث خطأ أثناء حفظ المقال");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 

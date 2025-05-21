@@ -58,53 +58,90 @@ export function ServiceForm({ service }: { service?: Service }) {
 
     try {
       if (isEditing) {
-        // Update existing service
-        const { error } = await supabase
-          .from("services")
-          .update({
-            title,
-            description,
-            icon,
-            image,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", service.id)
-
-        if (error) throw error
-
-        toast({
-          title: "تم التحديث",
-          description: "تم تحديث الخدمة بنجاح",
-        })
-      } else {
-        // Create new service
-        const { error } = await supabase.from("services").insert({
+        // Update existing service using the API route
+        console.log("Updating service with data:", {
+          id: service.id,
           title,
           description,
           icon,
           image,
-        })
+        });
 
-        if (error) throw error
+        const response = await fetch('/api/admin/services', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: service.id,
+            title,
+            description,
+            icon,
+            image,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "حدث خطأ أثناء تحديث الخدمة");
+        }
+
+        console.log("Service updated successfully:", data);
+
+        toast({
+          title: "تم التحديث",
+          description: "تم تحديث الخدمة بنجاح",
+        });
+      } else {
+        // Create new service using the API route
+        console.log("Creating new service with data:", {
+          title,
+          description,
+          icon,
+          image,
+        });
+
+        const response = await fetch('/api/admin/services', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            icon,
+            image,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "حدث خطأ أثناء إضافة الخدمة");
+        }
+
+        console.log("Service created successfully:", data);
 
         toast({
           title: "تمت الإضافة",
           description: "تم إضافة الخدمة بنجاح",
-        })
+        });
       }
 
       // Force a server refresh before redirecting
-      await fetch('/api/revalidate?path=/admin/services', { method: 'POST' })
+      await fetch('/api/revalidate?path=/admin/services', { method: 'POST' });
 
       // Add a small delay before redirecting to ensure revalidation completes
       setTimeout(() => {
-        router.push("/admin/services")
-        router.refresh()
-      }, 500)
+        router.push("/admin/services");
+        router.refresh();
+      }, 500);
     } catch (err: any) {
-      setError(err.message || "حدث خطأ أثناء حفظ الخدمة")
+      console.error("Error saving service:", err);
+      setError(err.message || "حدث خطأ أثناء حفظ الخدمة");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 

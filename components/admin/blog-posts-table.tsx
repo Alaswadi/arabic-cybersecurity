@@ -35,52 +35,87 @@ export function BlogPostsTable({ posts }: { posts: BlogPost[] }) {
   const handleDelete = async () => {
     if (!postToDelete) return
 
-    const { error } = await supabase.from("blog_posts").delete().eq("id", postToDelete.id)
+    try {
+      console.log("Deleting blog post with ID:", postToDelete.id);
 
-    if (error) {
+      // Use the API route to delete the blog post
+      const response = await fetch(`/api/admin/blog-posts/${postToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+      console.log("Delete response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "حدث خطأ أثناء حذف المقال");
+      }
+
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف المقال بنجاح",
+      });
+
+      // Force a server refresh
+      await fetch('/api/revalidate?path=/admin/blog', { method: 'POST' });
+
+      // Add a small delay before refreshing
+      setTimeout(() => {
+        router.refresh();
+        setPostToDelete(null);
+      }, 500);
+    } catch (error: any) {
+      console.error("Error deleting blog post:", error);
       toast({
         title: "خطأ",
-        description: "حدث خطأ أثناء حذف المقال",
+        description: error.message || "حدث خطأ أثناء حذف المقال",
         variant: "destructive",
-      })
-      return
+      });
     }
-
-    toast({
-      title: "تم الحذف",
-      description: "تم حذف المقال بنجاح",
-    })
-
-    router.refresh()
-    setPostToDelete(null)
   }
 
   const togglePublishStatus = async (post: BlogPost) => {
     const newStatus = !post.published
-    const { error } = await supabase
-      .from("blog_posts")
-      .update({
-        published: newStatus,
-        published_at: newStatus ? new Date().toISOString() : null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", post.id)
 
-    if (error) {
+    try {
+      // Use the API route to update the blog post
+      const response = await fetch('/api/admin/blog-posts', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: post.id,
+          published: newStatus,
+          published_at: newStatus ? new Date().toISOString() : null,
+          // Include other required fields to avoid overwriting them with null
+          title: post.title,
+          slug: post.slug,
+          content: post.content,
+          excerpt: post.excerpt,
+          featured_image: post.featured_image,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "حدث خطأ أثناء تغيير حالة النشر");
+      }
+
+      toast({
+        title: "تم التحديث",
+        description: newStatus ? "تم نشر المقال بنجاح" : "تم إلغاء نشر المقال بنجاح",
+      });
+
+      router.refresh();
+    } catch (error: any) {
+      console.error("Error updating blog post publish status:", error);
       toast({
         title: "خطأ",
-        description: "حدث خطأ أثناء تغيير حالة النشر",
+        description: error.message || "حدث خطأ أثناء تغيير حالة النشر",
         variant: "destructive",
-      })
-      return
+      });
     }
-
-    toast({
-      title: "تم التحديث",
-      description: newStatus ? "تم نشر المقال بنجاح" : "تم إلغاء نشر المقال بنجاح",
-    })
-
-    router.refresh()
   }
 
   return (
