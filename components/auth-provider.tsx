@@ -26,34 +26,64 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const supabase = createClient()
 
   useEffect(() => {
-    // Function to get the session
-    const getSession = async () => {
+    // Function to get the authenticated user and session
+    const getAuthData = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession()
+        // First get the session
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
 
-        if (error) {
-          console.error("Error getting session:", error.message)
+        if (sessionError) {
+          console.error("Error getting session:", sessionError.message)
+          setIsLoading(false)
           return
         }
 
-        setSession(data.session)
-        setUser(data.session?.user ?? null)
+        setSession(sessionData.session)
+
+        // If we have a session, get the authenticated user
+        if (sessionData.session) {
+          const { data: userData, error: userError } = await supabase.auth.getUser()
+
+          if (userError) {
+            console.error("Error getting user:", userError.message)
+            setUser(null)
+          } else {
+            setUser(userData.user)
+          }
+        } else {
+          setUser(null)
+        }
       } catch (error) {
-        console.error("Unexpected error in getSession:", error)
+        console.error("Unexpected error in getAuthData:", error)
+        setUser(null)
+        setSession(null)
       } finally {
         setIsLoading(false)
       }
     }
 
-    // Get the initial session
-    getSession()
+    // Get the initial auth data
+    getAuthData()
 
     // Set up the auth state change listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session)
-      setUser(session?.user ?? null)
+
+      // When auth state changes, get the user with getUser()
+      if (session) {
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error("Error getting user after auth state change:", error)
+          setUser(null)
+        } else {
+          setUser(data.user)
+        }
+      } else {
+        setUser(null)
+      }
+
       setIsLoading(false)
     })
 

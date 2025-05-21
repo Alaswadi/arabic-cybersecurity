@@ -17,22 +17,29 @@ export async function GET(request: NextRequest) {
       cookies: () => cookieStore
     });
 
-    // Get the session
+    // Get the session and user
     const { data: { session } } = await supabaseAuth.auth.getSession();
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
 
-    console.log("Authentication check:", session ? "Authenticated" : "Not authenticated");
+    console.log("Authentication check:", user ? "Authenticated" : "Not authenticated");
 
-    if (session) {
-      console.log("User ID:", session.user.id);
-      console.log("User Email:", session.user.email);
-    }
-
-    if (!session) {
+    if (userError) {
+      console.error("Error getting user:", userError.message);
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Authentication error: ' + userError.message },
         { status: 401 }
       )
     }
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized: No authenticated user found' },
+        { status: 401 }
+      )
+    }
+
+    console.log("User ID:", user.id);
+    console.log("User Email:", user.email);
 
     // Get query parameters
     const { searchParams } = new URL(request.url)
@@ -44,28 +51,48 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const offset = (page - 1) * limit
 
-    // Since we're seeing a discrepancy between regular client and service role client,
-    // let's use the service role client directly for all operations
-    console.log("Using service role client for all operations");
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-    if (!supabaseServiceKey) {
-      console.error('Service role key not configured');
-      return NextResponse.json(
-        { error: 'Service role key not configured' },
-        { status: 500 }
-      );
-    }
-
     // Create service role client
-    const serviceRoleClient = createSupabaseClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
+    let serviceRoleClient;
+
+    try {
+      // Import the admin client creator
+      const { createAdminClient } = await import('@/lib/supabase/admin');
+
+      // Create the admin client
+      serviceRoleClient = createAdminClient();
+      console.log("Successfully created service role client using admin utility");
+    } catch (error) {
+      console.error('Error creating service role client with admin utility:', error);
+
+      // Fallback to direct creation
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+      if (!supabaseServiceKey) {
+        console.error('Service role key not configured');
+        return NextResponse.json(
+          { error: 'Service role key not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.' },
+          { status: 500 }
+        );
       }
-    });
+
+      // Create service role client directly
+      try {
+        serviceRoleClient = createSupabaseClient(supabaseUrl, supabaseServiceKey, {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        });
+        console.log("Successfully created service role client directly");
+      } catch (clientError) {
+        console.error('Error creating direct service role client:', clientError);
+        return NextResponse.json(
+          { error: 'Failed to create Supabase client with service role key.' },
+          { status: 500 }
+        );
+      }
+    }
 
     // If ID is provided, fetch a single message
     if (id) {
@@ -171,17 +198,29 @@ export async function PATCH(request: NextRequest) {
       cookies: () => cookieStore
     });
 
-    // Get the session
+    // Get the session and user
     const { data: { session } } = await supabaseAuth.auth.getSession();
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
 
-    console.log("Authentication check:", session ? "Authenticated" : "Not authenticated");
+    console.log("Authentication check:", user ? "Authenticated" : "Not authenticated");
 
-    if (!session) {
+    if (userError) {
+      console.error("Error getting user:", userError.message);
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Authentication error: ' + userError.message },
         { status: 401 }
       )
     }
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized: No authenticated user found' },
+        { status: 401 }
+      )
+    }
+
+    console.log("User ID:", user.id);
+    console.log("User Email:", user.email);
 
     // Parse request body
     const body = await request.json()
@@ -201,28 +240,48 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    // Since we're seeing a discrepancy between regular client and service role client,
-    // let's use the service role client directly for updates to ensure it works
-    console.log("Using service role client for update operation");
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-    if (!supabaseServiceKey) {
-      console.error('Service role key not configured');
-      return NextResponse.json(
-        { error: 'Service role key not configured' },
-        { status: 500 }
-      );
-    }
-
     // Create service role client
-    const serviceRoleClient = createSupabaseClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
+    let serviceRoleClient;
+
+    try {
+      // Import the admin client creator
+      const { createAdminClient } = await import('@/lib/supabase/admin');
+
+      // Create the admin client
+      serviceRoleClient = createAdminClient();
+      console.log("Successfully created service role client using admin utility for update operation");
+    } catch (error) {
+      console.error('Error creating service role client with admin utility:', error);
+
+      // Fallback to direct creation
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+      if (!supabaseServiceKey) {
+        console.error('Service role key not configured');
+        return NextResponse.json(
+          { error: 'Service role key not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.' },
+          { status: 500 }
+        );
       }
-    });
+
+      // Create service role client directly
+      try {
+        serviceRoleClient = createSupabaseClient(supabaseUrl, supabaseServiceKey, {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        });
+        console.log("Successfully created service role client directly for update operation");
+      } catch (clientError) {
+        console.error('Error creating direct service role client:', clientError);
+        return NextResponse.json(
+          { error: 'Failed to create Supabase client with service role key.' },
+          { status: 500 }
+        );
+      }
+    }
 
     // Verify the message exists before updating
     console.log(`Verifying message ${id} exists before update`);
@@ -296,17 +355,29 @@ export async function DELETE(request: NextRequest) {
       cookies: () => cookieStore
     });
 
-    // Get the session
+    // Get the session and user
     const { data: { session } } = await supabaseAuth.auth.getSession();
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
 
-    console.log("Authentication check:", session ? "Authenticated" : "Not authenticated");
+    console.log("Authentication check:", user ? "Authenticated" : "Not authenticated");
 
-    if (!session) {
+    if (userError) {
+      console.error("Error getting user:", userError.message);
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Authentication error: ' + userError.message },
         { status: 401 }
       )
     }
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized: No authenticated user found' },
+        { status: 401 }
+      )
+    }
+
+    console.log("User ID:", user.id);
+    console.log("User Email:", user.email);
 
     // Get message ID from query parameters
     const { searchParams } = new URL(request.url)
@@ -319,28 +390,48 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // Since we're seeing a discrepancy between regular client and service role client,
-    // let's use the service role client directly for deletion to ensure it works
-    console.log("Using service role client for delete operation");
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-    if (!supabaseServiceKey) {
-      console.error('Service role key not configured');
-      return NextResponse.json(
-        { error: 'Service role key not configured' },
-        { status: 500 }
-      );
-    }
-
     // Create service role client
-    const serviceRoleClient = createSupabaseClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
+    let serviceRoleClient;
+
+    try {
+      // Import the admin client creator
+      const { createAdminClient } = await import('@/lib/supabase/admin');
+
+      // Create the admin client
+      serviceRoleClient = createAdminClient();
+      console.log("Successfully created service role client using admin utility for delete operation");
+    } catch (error) {
+      console.error('Error creating service role client with admin utility:', error);
+
+      // Fallback to direct creation
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+      if (!supabaseServiceKey) {
+        console.error('Service role key not configured');
+        return NextResponse.json(
+          { error: 'Service role key not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.' },
+          { status: 500 }
+        );
       }
-    });
+
+      // Create service role client directly
+      try {
+        serviceRoleClient = createSupabaseClient(supabaseUrl, supabaseServiceKey, {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        });
+        console.log("Successfully created service role client directly for delete operation");
+      } catch (clientError) {
+        console.error('Error creating direct service role client:', clientError);
+        return NextResponse.json(
+          { error: 'Failed to create Supabase client with service role key.' },
+          { status: 500 }
+        );
+      }
+    }
 
     // Verify the message exists before deleting
     console.log(`Verifying message ${id} exists before deletion`);
