@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, Phone, Trash, User } from "lucide-react"
+import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, Phone, Reply, Send, Trash, User } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { formatDistanceToNow } from "date-fns"
 import { ar } from "date-fns/locale"
@@ -23,6 +23,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 import type { Database } from "@/lib/database.types"
 
 type ContactMessage = Database["public"]["Tables"]["contact_messages"]["Row"]
@@ -33,6 +35,9 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
   const [isActionLoading, setIsActionLoading] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [replyContent, setReplyContent] = useState("")
+  const [isReplying, setIsReplying] = useState(false)
+  const [showReplyForm, setShowReplyForm] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
 
@@ -164,6 +169,65 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
       })
     } finally {
       setIsActionLoading(false)
+    }
+  }
+
+  const handleSendReply = async () => {
+    if (!message) return
+    if (!replyContent.trim()) {
+      toast({
+        title: "خطأ",
+        description: "الرجاء إدخال محتوى الرد",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsReplying(true)
+    try {
+      const response = await fetch("/api/admin/messages/reply", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messageId: message.id,
+          replyContent: replyContent,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        toast({
+          title: "تم الإرسال",
+          description: "تم إرسال الرد بنجاح",
+        })
+        setReplyContent("")
+        setShowReplyForm(false)
+        // Update the message with the reply data
+        if (data.data) {
+          setMessage(data.data)
+        } else {
+          // Refresh the message data
+          fetchMessage()
+        }
+      } else {
+        toast({
+          title: "خطأ",
+          description: data.error || "حدث خطأ أثناء إرسال الرد",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error sending reply:", error)
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsReplying(false)
     }
   }
 
@@ -368,33 +432,164 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
             </div>
           </div>
         </CardContent>
+        {/* Reply section */}
+        {message.replied && (
+          <div className="px-6 py-4" style={{
+            backgroundColor: adminTheme.colors.background.sidebar,
+            borderTop: `1px solid ${adminTheme.colors.border.light}`
+          }}>
+            <div className="mb-2 flex items-center">
+              <Badge
+                style={{
+                  backgroundColor: adminTheme.colors.status.success,
+                  color: 'white'
+                }}
+              >
+                تم الرد
+              </Badge>
+              {message.replied_at && (
+                <span className="mr-2 text-sm" style={{ color: adminTheme.colors.text.secondary }}>
+                  {formatDate(message.replied_at).relative}
+                </span>
+              )}
+            </div>
+            <div style={{
+              backgroundColor: adminTheme.colors.background.card,
+              padding: adminTheme.spacing.md,
+              borderRadius: adminTheme.borderRadius.md,
+              whiteSpace: 'pre-wrap',
+              color: adminTheme.colors.text.primary,
+              border: `1px solid ${adminTheme.colors.border.light}`,
+              fontSize: adminTheme.typography.fontSizes.md,
+            }}>
+              {message.reply_content}
+            </div>
+          </div>
+        )}
+
+        {/* Reply form */}
+        {showReplyForm && !message.replied && (
+          <div className="px-6 py-4" style={{
+            backgroundColor: adminTheme.colors.background.sidebar,
+            borderTop: `1px solid ${adminTheme.colors.border.light}`
+          }}>
+            <h3 className="text-lg font-medium mb-3 flex items-center">
+              <span style={{
+                backgroundColor: adminTheme.colors.primary.lighter,
+                color: adminTheme.colors.primary.main,
+                padding: `${adminTheme.spacing.xs} ${adminTheme.spacing.md}`,
+                borderRadius: adminTheme.borderRadius.md,
+                display: 'inline-flex',
+                alignItems: 'center'
+              }}>
+                <Reply className="h-4 w-4 mr-1" />
+                الرد على الرسالة
+              </span>
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="replyContent">محتوى الرد</Label>
+                <Textarea
+                  id="replyContent"
+                  value={replyContent}
+                  onChange={(e) => setReplyContent(e.target.value)}
+                  placeholder="اكتب ردك هنا..."
+                  rows={6}
+                  style={{
+                    backgroundColor: adminTheme.colors.background.card,
+                    border: `1px solid ${adminTheme.colors.border.main}`,
+                    borderRadius: adminTheme.borderRadius.md,
+                    color: adminTheme.colors.text.primary,
+                  }}
+                />
+              </div>
+              <div className="flex justify-end space-x-2 space-x-reverse">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowReplyForm(false)
+                    setReplyContent("")
+                  }}
+                  disabled={isReplying}
+                  style={{
+                    borderColor: adminTheme.colors.border.main,
+                    color: adminTheme.colors.text.primary,
+                  }}
+                >
+                  إلغاء
+                </Button>
+                <Button
+                  onClick={handleSendReply}
+                  disabled={isReplying || !replyContent.trim()}
+                  style={{
+                    backgroundColor: adminTheme.colors.primary.main,
+                    color: 'white',
+                  }}
+                >
+                  {isReplying ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      جاري الإرسال...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-4 w-4" />
+                      إرسال الرد
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <CardFooter className="flex justify-between p-4" style={{
           backgroundColor: adminTheme.colors.background.sidebar,
-          borderTop: `1px solid ${adminTheme.colors.border.light}`
+          borderTop: message.replied || showReplyForm ? 'none' : `1px solid ${adminTheme.colors.border.light}`
         }}>
-          <Button
-            variant="outline"
-            onClick={handleToggleRead}
-            disabled={isActionLoading}
-            size="lg"
-            style={{
-              borderColor: adminTheme.colors.border.main,
-              color: adminTheme.colors.text.primary,
-              fontWeight: adminTheme.typography.fontWeights.medium
-            }}
-          >
-            {message.read ? (
-              <>
-                <EyeOff className="mr-2 h-5 w-5" style={{ color: adminTheme.colors.primary.main }} />
-                تحديد كغير مقروءة
-              </>
-            ) : (
-              <>
-                <Eye className="mr-2 h-5 w-5" style={{ color: adminTheme.colors.primary.main }} />
-                تحديد كمقروءة
-              </>
+          <div className="flex space-x-2 space-x-reverse">
+            <Button
+              variant="outline"
+              onClick={handleToggleRead}
+              disabled={isActionLoading}
+              size="lg"
+              style={{
+                borderColor: adminTheme.colors.border.main,
+                color: adminTheme.colors.text.primary,
+                fontWeight: adminTheme.typography.fontWeights.medium
+              }}
+            >
+              {message.read ? (
+                <>
+                  <EyeOff className="mr-2 h-5 w-5" style={{ color: adminTheme.colors.primary.main }} />
+                  تحديد كغير مقروءة
+                </>
+              ) : (
+                <>
+                  <Eye className="mr-2 h-5 w-5" style={{ color: adminTheme.colors.primary.main }} />
+                  تحديد كمقروءة
+                </>
+              )}
+            </Button>
+
+            {!message.replied && !showReplyForm && (
+              <Button
+                variant="default"
+                onClick={() => setShowReplyForm(true)}
+                disabled={isActionLoading}
+                size="lg"
+                style={{
+                  backgroundColor: adminTheme.colors.primary.main,
+                  color: 'white',
+                  fontWeight: adminTheme.typography.fontWeights.medium
+                }}
+              >
+                <Reply className="mr-2 h-5 w-5" />
+                الرد على الرسالة
+              </Button>
             )}
-          </Button>
+          </div>
+
           <Button
             variant="destructive"
             onClick={() => setIsDeleteDialogOpen(true)}

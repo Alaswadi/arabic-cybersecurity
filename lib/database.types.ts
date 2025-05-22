@@ -36,6 +36,9 @@ export interface Database {
           message: string
           created_at: string
           read: boolean
+          replied: boolean
+          reply_content: string | null
+          replied_at: string | null
         }
         Insert: {
           id?: string
@@ -46,6 +49,9 @@ export interface Database {
           message: string
           created_at?: string
           read?: boolean
+          replied?: boolean
+          reply_content?: string | null
+          replied_at?: string | null
         }
         Update: {
           id?: string
@@ -56,6 +62,9 @@ export interface Database {
           message?: string
           created_at?: string
           read?: boolean
+          replied?: boolean
+          reply_content?: string | null
+          replied_at?: string | null
         }
       }
       blog_posts: {
