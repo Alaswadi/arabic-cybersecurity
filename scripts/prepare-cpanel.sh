@@ -102,7 +102,7 @@ EOL
 
 echo "Creating a README.md with deployment instructions..."
 cat > deployment/README.md << 'EOL'
-# Arabic Cybersecurity Website - cPanel Deployment
+# Phish Simulator Website - cPanel Deployment
 
 ## Deployment Instructions
 

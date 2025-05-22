@@ -20,7 +20,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
             />
           ) : (
             <div className="absolute inset-0 bg-blue-100 flex items-center justify-center">
-              <span className="text-blue-500 text-lg font-medium">فيش سيبراني</span>
+              <span className="text-blue-500 text-lg font-medium">Phish Simulator</span>
             </div>
           )}
         </div>

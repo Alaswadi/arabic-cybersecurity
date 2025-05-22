@@ -34,7 +34,7 @@ export function getEmailConfig(): EmailConfig | null {
   const password = process.env[EMAIL_ENV_VARS.ZOHO_PASSWORD];
   const host = process.env[EMAIL_ENV_VARS.ZOHO_SMTP_HOST] || 'smtp.zoho.com';
   const portStr = process.env[EMAIL_ENV_VARS.ZOHO_SMTP_PORT] || '465';
-  const fromName = process.env[EMAIL_ENV_VARS.EMAIL_FROM_NAME] || 'Arabic Cybersecurity';
+  const fromName = process.env[EMAIL_ENV_VARS.EMAIL_FROM_NAME] || 'Phish Simulator';
 
   // Validate required configuration
   if (!email || !password) {

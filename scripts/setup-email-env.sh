@@ -22,7 +22,7 @@ read zoho_smtp_host
 echo "Enter Zoho SMTP port (default: 465):"
 read zoho_smtp_port
 
-echo "Enter the sender name to display in emails (default: Arabic Cybersecurity):"
+echo "Enter the sender name to display in emails (default: Phish Simulator):"
 read email_from_name
 
 # Use defaults if not provided
@@ -35,7 +35,7 @@ if [ -z "$zoho_smtp_port" ]; then
 fi
 
 if [ -z "$email_from_name" ]; then
-    email_from_name="Arabic Cybersecurity"
+    email_from_name="Phish Simulator"
 fi
 
 # Check if email configuration already exists

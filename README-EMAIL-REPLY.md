@@ -33,7 +33,7 @@ Follow the prompts to enter your Zoho email credentials:
 - Password
 - SMTP host (default: smtp.zoho.com)
 - SMTP port (default: 465)
-- Sender name (default: Arabic Cybersecurity)
+- Sender name (default: Phish Simulator)
 
 ### 2. Update Database Schema
 

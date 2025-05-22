@@ -31,7 +31,7 @@ export function Footer() {
         <div className="py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4 gradient-text">فيش سيبراني</h3>
+              <h3 className="text-xl font-bold mb-4 gradient-text">Phish Simulator</h3>
               <p className="text-sm text-gray-400 mb-4">
                 شركة رائدة في مجال الأمن السيبراني متخصصة في حماية المؤسسات من الهجمات السيبرانية وتعزيز الأمن الرقمي
               </p>
@@ -155,7 +155,7 @@ export function Footer() {
 
         {/* Bottom Footer */}
         <div className="py-6 border-t border-[#2f3365] flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-gray-400">© {new Date().getFullYear()} فيش سيبراني. جميع الحقوق محفوظة.</p>
+          <p className="text-sm text-gray-400">© {new Date().getFullYear()} Phish Simulator. جميع الحقوق محفوظة.</p>
           <div className="flex space-x-6 space-x-reverse mt-4 md:mt-0">
             <Link href="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
               سياسة الخصوصية

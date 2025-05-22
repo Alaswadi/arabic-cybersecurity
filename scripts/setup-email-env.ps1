@@ -13,7 +13,7 @@ $zohoPassword = Read-Host "Enter your Zoho email password" -AsSecureString
 $zohoPasswordText = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($zohoPassword))
 $zohoSmtpHost = Read-Host "Enter Zoho SMTP host (default: smtp.zoho.com)"
 $zohoSmtpPort = Read-Host "Enter Zoho SMTP port (default: 465)"
-$emailFromName = Read-Host "Enter the sender name to display in emails (default: Arabic Cybersecurity)"
+$emailFromName = Read-Host "Enter the sender name to display in emails (default: Phish Simulator)"
 
 # Use defaults if not provided
 if ([string]::IsNullOrWhiteSpace($zohoSmtpHost)) {
@@ -23,7 +23,7 @@ if ([string]::IsNullOrWhiteSpace($zohoSmtpPort)) {
     $zohoSmtpPort = "465"
 }
 if ([string]::IsNullOrWhiteSpace($emailFromName)) {
-    $emailFromName = "Arabic Cybersecurity"
+    $emailFromName = "Phish Simulator"
 }
 
 # Read existing .env.local content

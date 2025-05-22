@@ -1,6 +1,6 @@
 # Manual Fix for Contact Form RLS Policies
 
-This guide explains how to manually fix the Row Level Security (RLS) policies for the contact form in your Arabic cybersecurity website.
+This guide explains how to manually fix the Row Level Security (RLS) policies for the contact form in your Phish Simulator website.
 
 ## The Problem
 

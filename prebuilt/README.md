@@ -1,4 +1,4 @@
-# Arabic Cybersecurity Website - Pre-built cPanel Deployment
+# Phish Simulator Website - Pre-built cPanel Deployment
 
 ## Deployment Instructions
 

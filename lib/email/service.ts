@@ -131,7 +131,7 @@ export function createReplyEmailTemplate(content: string, customerName: string):
   </div>
   <div class="footer">
     <p>هذا رد آلي، يرجى عدم الرد على هذا البريد الإلكتروني.</p>
-    <p>© ${new Date().getFullYear()} Arabic Cybersecurity. جميع الحقوق محفوظة.</p>
+    <p>© ${new Date().getFullYear()} Phish Simulator. جميع الحقوق محفوظة.</p>
   </div>
 </body>
 </html>

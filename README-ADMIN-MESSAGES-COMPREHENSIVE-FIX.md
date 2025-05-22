@@ -1,6 +1,6 @@
 # Comprehensive Fix for Admin Messages Page
 
-This guide provides a comprehensive solution to fix the issues with the admin messages page in your Arabic cybersecurity website. The problem involves cookie handling in Next.js 14 and proper authentication flow.
+This guide provides a comprehensive solution to fix the issues with the admin messages page in your Phish Simulator website. The problem involves cookie handling in Next.js 14 and proper authentication flow.
 
 ## Changes Made
 

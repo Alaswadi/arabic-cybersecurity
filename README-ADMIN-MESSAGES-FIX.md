@@ -91,4 +91,4 @@ Now that the admin messages page is working correctly, you should be able to:
 3. Mark messages as read/unread
 4. Delete messages when they're no longer needed
 
-This completes the contact form functionality for your Arabic cybersecurity website.
+This completes the contact form functionality for your Phish Simulator website.

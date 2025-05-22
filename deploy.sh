@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Deployment script for Arabic Cybersecurity website
+# Deployment script for Phish Simulator website
 
 # Check if dokploy is installed
 if ! command -v dokploy &> /dev/null; then

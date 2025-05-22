@@ -143,7 +143,7 @@ chmod +x prebuilt/start.sh
 
 echo "Creating a README.md with deployment instructions..."
 cat > prebuilt/README.md << 'EOL'
-# Arabic Cybersecurity Website - Pre-built cPanel Deployment
+# Phish Simulator Website - Pre-built cPanel Deployment
 
 ## Deployment Instructions
 
