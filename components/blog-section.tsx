@@ -44,44 +44,63 @@ export async function BlogSection() {
   let hasMore = false;
 
   try {
-    // Use Supabase client directly in server component
-    const supabase = createClient();
+    // Use fetch with cache: 'no-store' to ensure fresh data
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ||
+                   (typeof process !== 'undefined' && process.env.VERCEL_URL ?
+                    `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-    // Fetch blog posts from Supabase
-    const { data: blogPostsData, error } = await supabase
-      .from("blog_posts")
-      .select("*")
-      .eq("published", true as any) // Type assertion to avoid TypeScript error
-      .order("published_at", { ascending: false })
-      .limit(3);
+    const response = await fetch(`${baseUrl}/api/blog-posts?limit=3&offset=0`, {
+      cache: 'no-store',
+      next: { revalidate: 30 } // Revalidate every 30 seconds
+    });
 
-    // Log any errors for debugging
-    if (error) {
-      console.error("Error fetching blog posts for homepage:", error);
-    } else if (blogPostsData && blogPostsData.length > 0) {
-      // Transform Supabase data to match our component needs
-      blogPosts = blogPostsData.map((post: any) => ({
-        title: post.title || "عنوان المقال",
-        excerpt: post.excerpt || (post.content ? post.content.substring(0, 150) + "..." : ""),
-        image: post.featured_image || "/placeholder-blog-1.jpg",
-        date: post.published_at ? new Date(post.published_at).toLocaleDateString('ar-EG', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        }) : "غير محدد",
-        author: "فريق الأمن السيبراني", // Default author
-        authorImage: "/placeholder-author-1.jpg",
-        slug: post.slug || "blog-post",
-        category: post.category || "الأمن السيبراني",
-      }));
+    if (response.ok) {
+      const data = await response.json();
 
-      // Check if there are more posts
-      const { count } = await supabase
+      if (data.success && data.posts && data.posts.length > 0) {
+        blogPosts = data.posts;
+        hasMore = data.hasMore;
+      }
+    } else {
+      // If API fails, fallback to direct Supabase query
+      const supabase = createClient();
+
+      // Fetch blog posts from Supabase with cache-busting options
+      const { data: blogPostsData, error } = await supabase
         .from("blog_posts")
-        .select("*", { count: "exact", head: true })
-        .eq("published", true as any);
+        .select("*")
+        .eq("published", true as any)
+        .order("published_at", { ascending: false })
+        .limit(3);
 
-      hasMore = count ? count > 3 : false;
+      // Log any errors for debugging
+      if (error) {
+        console.error("Error fetching blog posts for homepage:", error);
+      } else if (blogPostsData && blogPostsData.length > 0) {
+        // Transform Supabase data to match our component needs
+        blogPosts = blogPostsData.map((post: any) => ({
+          title: post.title || "عنوان المقال",
+          excerpt: post.excerpt || (post.content ? post.content.substring(0, 150) + "..." : ""),
+          image: post.featured_image || "/placeholder-blog-1.jpg",
+          date: post.published_at ? new Date(post.published_at).toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }) : "غير محدد",
+          author: "فريق الأمن السيبراني", // Default author
+          authorImage: "/placeholder-author-1.jpg",
+          slug: post.slug || "blog-post",
+          category: post.category || "الأمن السيبراني",
+        }));
+
+        // Check if there are more posts
+        const { count } = await supabase
+          .from("blog_posts")
+          .select("*", { count: "exact", head: true })
+          .eq("published", true as any);
+
+        hasMore = count ? count > 3 : false;
+      }
     }
   } catch (error) {
     // Handle any unexpected errors

@@ -7,6 +7,10 @@ import { TestimonialsSection } from "@/components/testimonials-section"
 import { BlogSection } from "@/components/blog-section"
 import { CTASection } from "@/components/cta-section"
 
+// Set dynamic rendering with frequent revalidation
+export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col" dir="rtl">

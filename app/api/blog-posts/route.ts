@@ -10,10 +10,10 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const limit = parseInt(url.searchParams.get("limit") || "3");
     const offset = parseInt(url.searchParams.get("offset") || "0");
-    
+
     // Create a Supabase client
     const supabase = createClient();
-    
+
     // Fetch published blog posts with pagination
     const { data: posts, error, count } = await supabase
       .from("blog_posts")
@@ -36,12 +36,12 @@ export async function GET(request: NextRequest) {
       title: post.title,
       excerpt: post.excerpt || (post.content ? post.content.substring(0, 150) + "..." : ""),
       image: post.featured_image || "/placeholder-blog-1.jpg",
-      date: post.published_at 
+      date: post.published_at
         ? new Date(post.published_at).toLocaleDateString('ar-EG', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
-          }) 
+          })
         : "غير محدد",
       author: "فريق الأمن السيبراني", // Default author
       authorImage: "/placeholder-author-1.jpg",
@@ -49,12 +49,18 @@ export async function GET(request: NextRequest) {
       slug: post.slug,
     }));
 
-    return NextResponse.json({
+    // Create response with proper cache control headers
+    const response = NextResponse.json({
       success: true,
       posts: formattedPosts,
       total: count || formattedPosts.length,
       hasMore: count ? offset + limit < count : false
     });
+
+    // Set cache control headers to prevent caching
+    response.headers.set('Cache-Control', 'no-store, max-age=0');
+
+    return response;
   } catch (error) {
     console.error("Error in blog posts route:", error);
     return NextResponse.json(

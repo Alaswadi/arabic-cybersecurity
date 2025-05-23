@@ -71,29 +71,58 @@ export default async function ServicesPage() {
   let services = defaultServices;
 
   try {
-    const supabase = createClient()
+    // Use fetch with cache: 'no-store' to ensure fresh data
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ||
+                   (typeof process !== 'undefined' && process.env.VERCEL_URL ?
+                    `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-    // Fetch services from Supabase
-    const { data: servicesData, error } = await supabase
-      .from("services")
-      .select("*")
-      .order("created_at", { ascending: false })
+    const response = await fetch(`${baseUrl}/api/services?limit=10&offset=0`, {
+      cache: 'no-store',
+      next: { revalidate: 0 } // Revalidate on every request
+    });
 
-    // Log any errors for debugging
-    if (error) {
-      console.error("Error fetching services:", error)
-    } else if (servicesData && servicesData.length > 0) {
-      // Transform Supabase data to match our component needs
-      services = servicesData.map(service => ({
-        id: service.id,
-        icon: service.icon || "Shield", // Provide default icon
-        title: service.title,
-        description: service.description,
-        image: service.image,
-        features: service.description.split('\n').filter(line => line.trim().length > 0).slice(0, 5),
-        href: `/services/${service.id}`,
-        featured: false, // Set the first one as featured later
-      }))
+    if (response.ok) {
+      const data = await response.json();
+
+      if (data.success && data.services && data.services.length > 0) {
+        // Transform API data to match our component needs
+        services = data.services.map((service: any) => ({
+          id: service.id,
+          icon: service.icon || "Shield", // Provide default icon
+          title: service.title,
+          description: service.description,
+          image: service.image,
+          features: service.description.split('\n').filter((line: string) => line.trim().length > 0).slice(0, 5),
+          href: `/services/${service.slug}`,
+          featured: false, // Set the first one as featured later
+        }));
+      }
+    } else {
+      // Fallback to direct Supabase query if API fails
+      const supabase = createClient();
+
+      // Fetch services from Supabase
+      const { data: servicesData, error } = await supabase
+        .from("services")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      // Log any errors for debugging
+      if (error) {
+        console.error("Error fetching services:", error);
+      } else if (servicesData && servicesData.length > 0) {
+        // Transform Supabase data to match our component needs
+        services = servicesData.map(service => ({
+          id: service.id,
+          icon: service.icon || "Shield", // Provide default icon
+          title: service.title,
+          description: service.description,
+          image: service.image,
+          features: service.description.split('\n').filter(line => line.trim().length > 0).slice(0, 5),
+          href: `/services/${service.slug || service.id}`,
+          featured: false, // Set the first one as featured later
+        }));
+      }
     }
   } catch (error) {
     // Handle any unexpected errors

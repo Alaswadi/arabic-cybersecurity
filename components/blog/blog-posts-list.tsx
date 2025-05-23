@@ -40,19 +40,30 @@ export function BlogPostsList({
     try {
       // Use absolute URL to avoid issues with relative paths
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/blog-posts?limit=3&offset=${offset}`)
-      const data = await response.json()
+
+      // Add cache-busting timestamp to ensure fresh data
+      const timestamp = new Date().getTime();
+      const response = await fetch(`${baseUrl}/api/blog-posts?limit=3&offset=${offset}&_=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+
+      const data = await response.json();
 
       if (data.success && data.posts) {
-        setPosts([...posts, ...data.posts])
-        setOffset(offset + data.posts.length)
-        return { hasMore: data.hasMore }
+        setPosts([...posts, ...data.posts]);
+        setOffset(offset + data.posts.length);
+        return { hasMore: data.hasMore };
       }
 
-      return { hasMore: false }
+      return { hasMore: false };
     } catch (error) {
-      console.error("Error loading more posts:", error)
-      return { hasMore: false }
+      console.error("Error loading more posts:", error);
+      return { hasMore: false };
     }
   }
 

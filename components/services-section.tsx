@@ -1,46 +1,99 @@
 import { Button } from "@/components/ui/button"
 import { Shield, Users, Lock, Bell, FileText, Headphones, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase/server"
 
-export function ServicesSection() {
-  const services = [
-    {
-      icon: <Shield className="h-10 w-10 text-purple-500" />,
-      title: "تقييم المخاطر السيبرانية",
-      description: "تحليل شامل للمخاطر السيبرانية في مؤسستك وتحديد نقاط الضعف المحتملة",
-      href: "/services/risk-assessment",
-    },
-    {
-      icon: <Users className="h-10 w-10 text-purple-500" />,
-      title: "تدريب الموظفين",
-      description: "برامج تدريبية متخصصة لرفع مستوى الوعي الأمني لدى الموظفين وتعزيز ثقافة الأمن السيبراني",
-      href: "/services/employee-training",
-    },
-    {
-      icon: <Lock className="h-10 w-10 text-purple-500" />,
-      title: "اختبار الاختراق",
-      description: "اختبارات محاكاة للهجمات السيبرانية لتحديد نقاط الضعف في أنظمتك قبل استغلالها من قبل المهاجمين",
-      href: "/services/penetration-testing",
-    },
-    {
-      icon: <Bell className="h-10 w-10 text-purple-500" />,
-      title: "الاستجابة للحوادث",
-      description: "خدمات استجابة سريعة للحوادث السيبرانية للحد من الأضرار واستعادة العمليات بسرعة",
-      href: "/services/incident-response",
-    },
-    {
-      icon: <FileText className="h-10 w-10 text-purple-500" />,
-      title: "حماية البيانات",
-      description: "حلول متكاملة لحماية البيانات الحساسة والامتثال للمعايير التنظيمية",
-      href: "/services/data-protection",
-    },
-    {
-      icon: <Headphones className="h-10 w-10 text-purple-500" />,
-      title: "الدعم الفني المستمر",
-      description: "دعم فني على مدار الساعة لضمان استمرارية الأعمال وحماية أنظمتك",
-      href: "/services/technical-support",
-    },
-  ]
+// Default services in case Supabase fetch fails
+const defaultServices = [
+  {
+    icon: <Shield className="h-10 w-10 text-purple-500" />,
+    title: "تقييم المخاطر السيبرانية",
+    description: "تحليل شامل للمخاطر السيبرانية في مؤسستك وتحديد نقاط الضعف المحتملة",
+    href: "/services/risk-assessment",
+    slug: "risk-assessment",
+  },
+  {
+    icon: <Users className="h-10 w-10 text-purple-500" />,
+    title: "تدريب الموظفين",
+    description: "برامج تدريبية متخصصة لرفع مستوى الوعي الأمني لدى الموظفين وتعزيز ثقافة الأمن السيبراني",
+    href: "/services/employee-training",
+    slug: "employee-training",
+  },
+  {
+    icon: <Lock className="h-10 w-10 text-purple-500" />,
+    title: "اختبار الاختراق",
+    description: "اختبارات محاكاة للهجمات السيبرانية لتحديد نقاط الضعف في أنظمتك قبل استغلالها من قبل المهاجمين",
+    href: "/services/penetration-testing",
+    slug: "penetration-testing",
+  },
+  {
+    icon: <Bell className="h-10 w-10 text-purple-500" />,
+    title: "الاستجابة للحوادث",
+    description: "خدمات استجابة سريعة للحوادث السيبرانية للحد من الأضرار واستعادة العمليات بسرعة",
+    href: "/services/incident-response",
+    slug: "incident-response",
+  },
+  {
+    icon: <FileText className="h-10 w-10 text-purple-500" />,
+    title: "حماية البيانات",
+    description: "حلول متكاملة لحماية البيانات الحساسة والامتثال للمعايير التنظيمية",
+    href: "/services/data-protection",
+    slug: "data-protection",
+  },
+  {
+    icon: <Headphones className="h-10 w-10 text-purple-500" />,
+    title: "الدعم الفني المستمر",
+    description: "دعم فني على مدار الساعة لضمان استمرارية الأعمال وحماية أنظمتك",
+    href: "/services/technical-support",
+    slug: "technical-support",
+  },
+]
+
+// Map service slugs to icons
+const serviceIcons: Record<string, JSX.Element> = {
+  "risk-assessment": <Shield className="h-10 w-10 text-purple-500" />,
+  "employee-training": <Users className="h-10 w-10 text-purple-500" />,
+  "penetration-testing": <Lock className="h-10 w-10 text-purple-500" />,
+  "incident-response": <Bell className="h-10 w-10 text-purple-500" />,
+  "data-protection": <FileText className="h-10 w-10 text-purple-500" />,
+  "technical-support": <Headphones className="h-10 w-10 text-purple-500" />,
+}
+
+export async function ServicesSection() {
+  // Initialize with default services
+  let services = defaultServices;
+
+  try {
+    // Use Supabase client directly in server component
+    const supabase = createClient();
+
+    // Fetch services from Supabase with cache-busting options
+    const { data: servicesData, error } = await supabase
+      .from("services")
+      .select("*")
+      .limit(6);
+
+    // Log any errors for debugging
+    if (error) {
+      console.error("Error fetching services for homepage:", error);
+    } else if (servicesData && servicesData.length > 0) {
+      // Transform Supabase data to match our component needs
+      services = servicesData.map((service: any) => {
+        const slug = service.slug || "default-service";
+        return {
+          icon: serviceIcons[slug] || <Shield className="h-10 w-10 text-purple-500" />,
+          title: service.title || "عنوان الخدمة",
+          description: service.short_description || service.description?.substring(0, 150) || "وصف الخدمة",
+          href: `/services/${service.slug}`,
+          slug: service.slug,
+        };
+      });
+    }
+  } catch (error) {
+    // Handle any unexpected errors
+    console.error("Unexpected error fetching services for homepage:", error);
+    // Use default services in case of error
+  }
 
   return (
     <section className="py-20 bg-[#1a1c3a]">
