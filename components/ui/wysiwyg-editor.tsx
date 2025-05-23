@@ -29,9 +29,9 @@ export function WysiwygEditor({
   const editorRef = useRef<any>(null)
   const [isEditorReady, setIsEditorReady] = useState(false)
 
-  // TinyMCE API key - using the free cloud version
-  // In production, you should use your own API key
-  const apiKey = "qagffr3pkuv17a8on1afax661irst1hbr4e6tbv888sz91jc"
+  // TinyMCE API key - registered for phishsimulator.com
+  // This key is associated with your TinyMCE account
+  const apiKey = "swmvjisib8nle09qqeo5efiijj05xn95ugyb6vmm4jo34bxj"
 
   return (
     <div className="space-y-2">
