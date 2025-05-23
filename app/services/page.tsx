@@ -225,7 +225,10 @@ export default async function ServicesPage() {
                       {service.title}
                     </Link>
                   </h3>
-                  <p className="text-gray-700 mb-4 text-sm line-clamp-3">{service.description}</p>
+                  <p className="text-gray-700 mb-4 text-sm line-clamp-3">
+                    {service.description.replace(/<[^>]*>/g, '').substring(0, 150)}
+                    {service.description.length > 150 ? '...' : ''}
+                  </p>
                   <Link
                     href={service.href}
                     className="inline-block text-purple-600 hover:text-purple-800 text-sm font-medium"

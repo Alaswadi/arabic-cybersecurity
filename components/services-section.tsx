@@ -83,7 +83,8 @@ export async function ServicesSection() {
         return {
           icon: serviceIcons[slug] || <Shield className="h-10 w-10 text-purple-500" />,
           title: service.title || "عنوان الخدمة",
-          description: service.short_description || service.description?.substring(0, 150) || "وصف الخدمة",
+          description: service.short_description ||
+            (service.description ? service.description.replace(/<[^>]*>/g, '').substring(0, 150) + (service.description.length > 150 ? '...' : '') : "وصف الخدمة"),
           href: `/services/${service.slug}`,
           slug: service.slug,
         };

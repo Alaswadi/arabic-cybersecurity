@@ -18,7 +18,10 @@ export function ServiceCard({ service }: { service: Service }) {
             </div>
             <h2 className="text-xl font-bold group-hover:text-blue-600 transition-colors">{service.title}</h2>
           </div>
-          <p className="text-gray-600 line-clamp-3">{service.description}</p>
+          <p className="text-gray-600 line-clamp-3">
+            {service.description.replace(/<[^>]*>/g, '').substring(0, 150)}
+            {service.description.length > 150 ? '...' : ''}
+          </p>
           <div className="mt-4 text-blue-600 font-medium text-sm">عرض التفاصيل</div>
         </div>
       </div>

@@ -28,50 +28,27 @@ const iconMap: Record<string, React.ReactElement<any>> = {
   BarChart: <BarChart className="h-8 w-8 text-white" />,
 }
 
-// Function to format service description as HTML
-function formatServiceDescription(description: string): string {
+// Function to ensure service description is valid HTML
+function ensureValidHtml(description: string): string {
   if (!description) return '';
 
+  // Check if the description already contains HTML tags
+  const hasHtmlTags = /<[a-z][\s\S]*>/i.test(description);
+
+  // If it already has HTML tags, return it as is
+  if (hasHtmlTags) {
+    return description;
+  }
+
+  // If it doesn't have HTML tags, wrap it in paragraph tags
   // Split the description into paragraphs
   const paragraphs = description.split('\n').filter(p => p.trim().length > 0);
 
   // If there are no paragraphs, return empty string
   if (paragraphs.length === 0) return '';
 
-  // Create HTML structure
-  let html = `
-    <h2 class="text-2xl font-bold mb-4">نظرة عامة</h2>
-    <p class="mb-6">${paragraphs[0]}</p>
-  `;
-
-  // Add more sections if we have more paragraphs
-  if (paragraphs.length > 1) {
-    html += `
-      <h2 class="text-2xl font-bold mb-4">كيف نعمل</h2>
-      <p class="mb-6">${paragraphs[1]}</p>
-    `;
-  }
-
-  // Add features section
-  const features = paragraphs.slice(2, 7);
-  if (features.length > 0) {
-    html += `
-      <h2 class="text-2xl font-bold mb-4">المميزات الرئيسية</h2>
-      <ul class="list-disc pr-6 mb-6 space-y-2">
-        ${features.map(feature => `<li>${feature}</li>`).join('\n')}
-      </ul>
-    `;
-  }
-
-  // Add why choose us section
-  if (paragraphs.length > 7) {
-    html += `
-      <h2 class="text-2xl font-bold mb-4">لماذا تختار خدمتنا</h2>
-      <p class="mb-6">${paragraphs[7]}</p>
-    `;
-  }
-
-  return html;
+  // Create simple HTML with paragraphs
+  return paragraphs.map(p => `<p class="mb-4">${p}</p>`).join('\n');
 }
 
 // Default service in case Supabase fetch fails
@@ -152,7 +129,7 @@ export default async function ServiceDetailPage(
       title: serviceData.title,
       icon: serviceData.icon || "Shield",
       image: serviceData.image || null,
-      description: serviceData.description ? formatServiceDescription(serviceData.description) : defaultService.description,
+      description: serviceData.description ? ensureValidHtml(serviceData.description) : defaultService.description,
     };
 
     // Fetch other services for "Other Services" section
