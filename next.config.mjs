@@ -22,15 +22,19 @@ const nextConfig = {
   // Set all pages to be server-side rendered by default
   // This ensures dynamic data fetching from Supabase
   reactStrictMode: true,
-  // Add experimental features for better compatibility
+  // Configure server actions and components
   experimental: {
-    // Configure server actions and components
     serverActions: {
       bodySizeLimit: '2mb',
     },
+  },
+  // Turbopack configuration (stable, no longer experimental)
+  turbopack: {
+    // No specific rules needed as we'll use the default handling
   },
   // External packages for server components (moved from experimental)
   serverExternalPackages: ['@supabase/supabase-js'],
 }
 
 export default nextConfig
+

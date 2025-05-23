@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 export function Hero() {
   return (
@@ -25,11 +26,8 @@ export function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="gradient-bg hover:opacity-90 px-6 py-6 text-lg h-auto purple-glow">
-              ابدأ الآن مجاناً
-            </Button>
-            <Button variant="outline" className="border-gray-700 text-white hover:bg-gray-800 px-6 py-6 text-lg h-auto">
-              احجز عرضاً توضيحياً <ArrowLeft className="mr-2 h-5 w-5" />
+            <Button asChild variant="outline" className="border-gray-700 text-white hover:bg-gray-800 px-6 py-6 text-lg h-auto">
+              <Link href="/demo">احجز عرضاً توضيحياً <ArrowLeft className="mr-2 h-5 w-5" /></Link>
             </Button>
           </div>
         </div>

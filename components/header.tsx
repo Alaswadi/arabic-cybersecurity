@@ -48,11 +48,8 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hover:bg-gray-800 hidden md:flex">
-            تسجيل الدخول
-          </Button>
           <Button className="gradient-bg hover:opacity-90 hidden md:flex">
-            ابدأ الآن
+            <Link href="/demo">ابدأ الآن</Link>
           </Button>
           <Button
             variant="ghost"
