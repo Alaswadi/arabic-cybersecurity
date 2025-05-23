@@ -16,6 +16,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { AlertCircle, ArrowLeft } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LocalImageUpload } from "@/components/ui/local-image-upload"
+import { WysiwygEditor } from "@/components/ui/wysiwyg-editor"
 import Link from "next/link"
 import { adminTheme } from "@/lib/admin-theme"
 
@@ -255,21 +256,15 @@ export function BlogPostForm({ post }: { post?: BlogPost }) {
             helpText="الصورة الرئيسية للمقال (اختياري)"
           />
 
-          <div className="space-y-2">
-            <Label htmlFor="content" style={{ color: adminTheme.colors.text.primary }}>محتوى المقال</Label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              required
-              rows={10}
-              style={{
-                backgroundColor: '#FFFFFF !important',
-                borderColor: `${adminTheme.colors.border.main} !important`,
-                color: `${adminTheme.colors.text.primary} !important`
-              }}
-            />
-          </div>
+          <WysiwygEditor
+            id="content"
+            label="محتوى المقال"
+            value={content}
+            onChange={setContent}
+            required={true}
+            placeholder="اكتب محتوى المقال هنا..."
+            dir="rtl"
+          />
 
           <div className="flex items-center space-x-2 space-x-reverse">
             <Switch

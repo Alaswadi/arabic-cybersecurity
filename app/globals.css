@@ -81,6 +81,42 @@ body {
   text-decoration: underline;
 }
 
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.25rem;
+}
+
+.prose table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  text-align: right;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.prose table td {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.prose blockquote {
+  border-right: 4px solid #9333ea;
+  padding-right: 1rem;
+  margin-right: 0;
+  margin-left: 0;
+  font-style: italic;
+  color: #6b7280;
+  margin-bottom: 1.25rem;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+  margin-bottom: 1.25rem;
+}
+
 .prose-invert {
   color: #d1d5db;
 }
@@ -100,6 +136,20 @@ body {
 
 .prose-invert a:hover {
   text-decoration: underline;
+}
+
+.prose-invert table th {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.prose-invert table td {
+  border-color: #4b5563;
+}
+
+.prose-invert blockquote {
+  border-color: #a78bfa;
+  color: #9ca3af;
 }
 
 /* Card hover effects */

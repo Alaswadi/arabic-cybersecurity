@@ -15,6 +15,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { AlertCircle, ArrowLeft } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LocalImageUpload } from "@/components/ui/local-image-upload"
+import { WysiwygEditor } from "@/components/ui/wysiwyg-editor"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { adminTheme } from "@/lib/admin-theme"
@@ -212,21 +213,15 @@ export function ServiceForm({ service }: { service?: Service }) {
             <p className="text-sm" style={{ color: adminTheme.colors.text.muted }}>اختر الأيقونة المناسبة للخدمة</p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description" style={{ color: adminTheme.colors.text.primary }}>وصف الخدمة</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              rows={5}
-              style={{
-                backgroundColor: '#FFFFFF !important',
-                borderColor: `${adminTheme.colors.border.main} !important`,
-                color: `${adminTheme.colors.text.primary} !important`
-              }}
-            />
-          </div>
+          <WysiwygEditor
+            id="description"
+            label="وصف الخدمة"
+            value={description}
+            onChange={setDescription}
+            required={true}
+            placeholder="اكتب وصف الخدمة هنا..."
+            dir="rtl"
+          />
 
           <LocalImageUpload
             value={image}
