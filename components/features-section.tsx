@@ -18,8 +18,8 @@ export function FeaturesSection() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              كل ما تحتاجه لحماية <span className="gradient-text">مؤسستك</span> بفعالية
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white/90 text-4xl">
+              كل ما تحتاجه لحماية <span className="text-white/90">مؤسستك</span> بفعالية
             </h2>
             <p className="text-gray-300 mb-8 text-lg">
               نقدم حلولاً متكاملة للأمن السيبراني تساعد المؤسسات على تحديد المخاطر ومنع الهجمات وحماية البيانات الحساسة. منصتنا المتطورة تجمع بين التكنولوجيا المتقدمة والخبرة البشرية لتوفير حماية شاملة.

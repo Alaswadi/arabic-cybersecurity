@@ -7,21 +7,21 @@ export function Hero() {
   return (
     <div className="relative min-h-[700px] overflow-hidden bg-[#1a1c3a]">
       {/* Background Elements */}
-      <div className="absolute inset-0 z-0 opacity-30">
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-700 blur-[100px]"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full bg-blue-700 blur-[100px]"></div>
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-600/40 blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full bg-blue-600/40 blur-[120px] animate-pulse"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-500/10 to-blue-500/10 blur-[150px]"></div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-24 text-white">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            <span className="gradient-text">تقليل المخاطر السيبرانية</span>
-            <br />
-            بشكل فعال وعلى نطاق واسع
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
+            <span className="gradient-text block mb-2">تقليل المخاطر السيبرانية</span>
+            <span className="text-white font-extrabold">بشكل فعال وعلى نطاق واسع</span>
           </h1>
 
-          <p className="text-lg md:text-xl mb-10 text-gray-300 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl mb-12 text-white/90 leading-relaxed max-w-2xl mx-auto font-medium">
             منصتنا المتطورة تساعد المؤسسات على تعزيز الأمن السيبراني وحماية البيانات الحساسة من التهديدات المتطورة
           </p>
 
@@ -34,7 +34,7 @@ export function Hero() {
 
         {/* Trusted By Section */}
         <div className="mt-24 text-center">
-          <p className="text-sm text-gray-400 mb-8">يثق بنا العديد من المؤسسات الرائدة</p>
+          <p className="text-sm text-white/70 mb-8 font-medium">يثق بنا العديد من المؤسسات الرائدة</p>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
             <div className="opacity-70 hover:opacity-100 transition-opacity">
               <Image src="/placeholder-logo.svg" alt="شركة 1" width={120} height={40} />

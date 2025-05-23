@@ -101,7 +101,7 @@ export async function ServicesSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="gradient-text">خدماتنا</span>
+            <span className="text-white/90">خدماتنا</span>
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto">
             نقدم مجموعة شاملة من الخدمات المصممة خصيصًا لتعزيز الأمن السيبراني لمؤسستك وحماية بياناتك من التهديدات المتطورة
