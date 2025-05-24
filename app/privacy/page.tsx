@@ -126,8 +126,8 @@ export default function PrivacyPolicyPage() {
               </p>
               <ul className="list-none space-y-2">
                 <li><strong>البريد الإلكتروني:</strong> privacy@phishsimulator.com</li>
-                <li><strong>الهاتف:</strong> +966 12 345 6789</li>
-                <li><strong>العنوان:</strong> شارع الملك فهد، برج المملكة، الطابق 20، الرياض، المملكة العربية السعودية</li>
+                <li><strong>الهاتف:</strong> +968 12 345 6789</li>
+                <li><strong>العنوان:</strong>عمان - مسقط</li>
               </ul>
             </div>
           </div>

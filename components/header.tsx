@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import { useState } from "react"
@@ -9,11 +10,17 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-[#1a1c3a] text-white border-b border-[#2f3365] sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between p-4">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="text-xl font-bold flex items-center">
-            <span className="gradient-text">Phish Simulator</span>
+    <header className="bg-[#1a1c3a] text-white border-b border-[#2f3365] sticky top-0 z-50 h-14">
+      <div className="container mx-auto flex items-center justify-between px-4 h-full">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src="/phishsim_logo.png"
+              alt="Phish Simulator Logo"
+              width={140}
+              height={40}
+              className="object-contain"
+            />
           </Link>
         </div>
 

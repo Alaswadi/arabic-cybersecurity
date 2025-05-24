@@ -102,7 +102,11 @@ export default function AboutPage() {
             <div className="relative">
               <div className="relative z-10 rounded-lg overflow-hidden border border-gray-200 shadow-xl">
                 <div className="h-80 bg-gray-100 flex items-center justify-center">
-                  <span className="text-gray-400 text-2xl">صورة الشركة</span>
+                  <img 
+                    src="/phishsim_com.jpg" 
+                    alt="صورة الشركة" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
               <div className="absolute top-8 -right-8 w-full h-full bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg -z-10 opacity-20"></div>
@@ -136,33 +140,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">
-              فريقنا
-            </h2>
-            <p className="text-gray-700">
-              يضم فريقنا نخبة من الخبراء المتخصصين في مختلف مجالات الأمن السيبراني.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {teamMembers.map((member, index) => (
-              <div key={index} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:border-purple-500 transition-all duration-300 hover-card-effect">
-                <div className="h-64 bg-gray-100 flex items-center justify-center">
-                  <span className="text-gray-400 text-2xl">صورة العضو</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-1 text-gray-900">{member.name}</h3>
-                  <p className="text-purple-600 text-sm mb-3">{member.position}</p>
-                  <p className="text-gray-700 text-sm">{member.bio}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-16 bg-[#1a1c3a] text-white">

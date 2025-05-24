@@ -10,12 +10,12 @@ export default function ContactPage() {
     {
       icon: <MapPin className="h-6 w-6 text-purple-600" />,
       title: "العنوان",
-      details: "شارع الملك فهد، برج المملكة، الطابق 20، الرياض، المملكة العربية السعودية",
+      details: "عمان - مسقط",
     },
     {
       icon: <Phone className="h-6 w-6 text-purple-600" />,
       title: "الهاتف",
-      details: "+966 12 345 6789",
+      details: "+968 12 345 6789",
     },
     {
       icon: <Mail className="h-6 w-6 text-purple-600" />,

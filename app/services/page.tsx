@@ -288,7 +288,9 @@ export default async function ServicesPage() {
         <div className="container mx-auto px-4 max-w-3xl text-center">
           <h2 className="text-2xl font-bold mb-4 text-gray-900">هل تحتاج إلى مساعدة في اختيار الخدمة المناسبة؟</h2>
           <p className="text-gray-700 mb-6">فريقنا من الخبراء جاهز لمساعدتك في اختيار الحلول المناسبة لاحتياجات مؤسستك</p>
-          <Button className="gradient-bg hover:opacity-90 px-6 py-6 text-lg h-auto">تواصل معنا</Button>
+          <Button asChild className="gradient-bg hover:opacity-90 px-6 py-6 text-lg h-auto">
+            <Link href="/contact">تواصل معنا</Link>
+          </Button>
         </div>
       </section>
 
