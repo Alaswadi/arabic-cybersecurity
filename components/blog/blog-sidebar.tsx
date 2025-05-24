@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 import { CalendarDays, Tag } from "lucide-react"
 import { formatDate } from "@/lib/utils"
+import { NewsletterSubscription } from "@/components/newsletter-subscription"
 
 export async function BlogSidebar() {
   const supabase = createClient()
@@ -61,25 +62,7 @@ export async function BlogSidebar() {
         </div>
       </div>
 
-      <div className="bg-blue-800 text-white rounded-lg shadow-sm p-6">
-        <h3 className="text-xl font-bold mb-4">اشترك في النشرة البريدية</h3>
-        <p className="mb-4 text-blue-100">
-          احصل على آخر المقالات والنصائح حول الأمن السيبراني مباشرة إلى بريدك الإلكتروني.
-        </p>
-        <form className="space-y-3">
-          <input
-            type="email"
-            placeholder="البريد الإلكتروني"
-            className="w-full px-4 py-2 rounded-md bg-blue-700 text-white placeholder-blue-300 border border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="w-full bg-white text-blue-800 font-medium py-2 px-4 rounded-md hover:bg-blue-50 transition-colors"
-          >
-            اشتراك
-          </button>
-        </form>
-      </div>
+      <NewsletterSubscription variant="sidebar" />
     </div>
   )
 }

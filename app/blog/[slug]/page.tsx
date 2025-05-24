@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
+import { NewsletterSubscription } from "@/components/newsletter-subscription"
 
 // Make this page dynamic to fetch data from Supabase at request time
 export const dynamic = 'force-dynamic'
@@ -335,25 +336,14 @@ export default async function BlogPostPage(
               <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
                 <h3 className="text-xl font-bold mb-4 text-gray-900">اشترك في النشرة الإخبارية</h3>
                 <p className="text-gray-700 mb-4">احصل على آخر المقالات والتحديثات مباشرة إلى بريدك الإلكتروني</p>
-                <Input
-                  placeholder="بريدك الإلكتروني"
-                  className="bg-white border-gray-300 text-gray-900 mb-3"
-                />
-                <Button className="w-full gradient-bg hover:opacity-90">اشترك الآن</Button>
+                <NewsletterSubscription variant="blog-sidebar" />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="py-12 bg-gray-50 border-t border-gray-200">
-        <div className="container mx-auto px-4 max-w-3xl text-center">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">هل أعجبك هذا المقال؟</h2>
-          <p className="text-gray-700 mb-6">اشترك في نشرتنا الإخبارية للحصول على المزيد من المقالات والتحديثات حول الأمن السيبراني</p>
-          <Button className="gradient-bg hover:opacity-90 px-6 py-3">اشترك الآن</Button>
-        </div>
-      </section>
+
 
       <Footer />
     </div>

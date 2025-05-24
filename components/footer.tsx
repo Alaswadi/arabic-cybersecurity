@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Facebook, Twitter, Instagram, Linkedin, Github, Send } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { NewsletterSubscription } from "@/components/newsletter-subscription"
 
 export function Footer() {
   return (
@@ -9,22 +10,7 @@ export function Footer() {
       <div className="container mx-auto px-4">
         {/* Newsletter Section */}
         <div className="py-12 border-b border-[#2f3365]">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl font-bold mb-4 gradient-text">اشترك في نشرتنا الإخبارية</h3>
-            <p className="text-gray-400 mb-6">
-              احصل على أحدث الأخبار والتحديثات حول الأمن السيبراني والتهديدات الجديدة مباشرة إلى بريدك الإلكتروني
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <Input
-                type="email"
-                placeholder="أدخل بريدك الإلكتروني"
-                className="bg-[#242850] border-[#2f3365] text-white"
-              />
-              <Button className="gradient-bg hover:opacity-90">
-                اشترك <Send className="mr-2 h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          <NewsletterSubscription variant="footer" />
         </div>
 
         {/* Main Footer */}

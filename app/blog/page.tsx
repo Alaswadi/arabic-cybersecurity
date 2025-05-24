@@ -265,20 +265,7 @@ export default async function BlogPage() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="py-12 bg-gray-50 border-t border-gray-200">
-        <div className="container mx-auto px-4 max-w-3xl text-center">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">اشترك في النشرة الإخبارية</h2>
-          <p className="text-gray-700 mb-6">احصل على آخر المقالات والتحديثات مباشرة إلى بريدك الإلكتروني</p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Input
-              placeholder="بريدك الإلكتروني"
-              className="bg-white border-gray-300 text-gray-900 flex-grow py-6"
-            />
-            <Button className="gradient-bg hover:opacity-90 px-6 py-6 text-lg h-auto">اشترك الآن</Button>
-          </div>
-        </div>
-      </section>
+
 
       <Footer />
     </div>
