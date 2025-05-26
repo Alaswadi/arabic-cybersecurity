@@ -8,6 +8,8 @@ import { Footer } from "@/components/footer"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
 import { FallbackImage } from "@/components/ui/fallback-image"
+import { Metadata } from "next"
+import { ServiceStructuredData } from "@/components/structured-data"
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -76,6 +78,96 @@ const defaultService = {
     <p class="mb-6">نحن نتميز بفريق من الخبراء المتخصصين في مجال الأمن السيبراني مع خبرة واسعة في تقييم المخاطر السيبرانية للمؤسسات من مختلف الأحجام والقطاعات. نستخدم أحدث التقنيات والمنهجيات لضمان تقييم شامل ودقيق للمخاطر السيبرانية في مؤسستك.</p>
   `,
 };
+
+// Generate metadata for SEO
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const params = await props.params;
+
+  try {
+    const supabase = createClient();
+
+    // Try to fetch service by ID
+    const { data: serviceData, error } = await supabase
+      .from("services")
+      .select("*")
+      .eq("id", params.slug)
+      .maybeSingle();
+
+    if (error || !serviceData) {
+      // Fallback to default service
+      return {
+        title: defaultService.title,
+        description: "خدمة متخصصة في الأمن السيبراني من Phish Simulator لحماية مؤسستك من التهديدات الرقمية",
+        openGraph: {
+          title: defaultService.title,
+          description: "خدمة متخصصة في الأمن السيبراني من Phish Simulator لحماية مؤسستك من التهديدات الرقمية",
+          type: 'website',
+          url: `https://phishsimulator.com/services/${params.slug}`,
+          images: [
+            {
+              url: '/phishsim_logo.png',
+              width: 1200,
+              height: 630,
+              alt: defaultService.title,
+            },
+          ],
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: defaultService.title,
+          description: "خدمة متخصصة في الأمن السيبراني من Phish Simulator لحماية مؤسستك من التهديدات الرقمية",
+          images: ['/phishsim_logo.png'],
+        },
+        alternates: {
+          canonical: `https://phishsimulator.com/services/${params.slug}`,
+        },
+      };
+    }
+
+    const title = serviceData.title || "خدمة - Phish Simulator";
+    const description = serviceData.description
+      ? serviceData.description.replace(/<[^>]*>/g, '').substring(0, 160) + "..."
+      : "خدمة متخصصة في الأمن السيبراني من Phish Simulator لحماية مؤسستك من التهديدات الرقمية";
+    const image = serviceData.image || "/phishsim_logo.png";
+
+    return {
+      title,
+      description,
+      keywords: ["الأمن السيبراني", "خدمات الأمان", "حماية المؤسسات", "التصيد الاحتيالي", serviceData.title],
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        url: `https://phishsimulator.com/services/${params.slug}`,
+        images: [
+          {
+            url: image,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [image],
+      },
+      alternates: {
+        canonical: `https://phishsimulator.com/services/${params.slug}`,
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: "خدمة - Phish Simulator",
+      description: "خدمة متخصصة في الأمن السيبراني من Phish Simulator لحماية مؤسستك من التهديدات الرقمية",
+    };
+  }
+}
 
 export default async function ServiceDetailPage(
   props: {
@@ -152,6 +244,12 @@ export default async function ServiceDetailPage(
 
   return (
     <div className="flex min-h-screen flex-col bg-white" dir="rtl">
+      <ServiceStructuredData
+        name={service.title}
+        description={service.description.replace(/<[^>]*>/g, '').substring(0, 160)}
+        url={`https://phishsimulator.com/services/${params.slug}`}
+        image={service.image}
+      />
       <Header />
 
       {/* Hero Section */}

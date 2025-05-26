@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
 import { NewsletterSubscription } from "@/components/newsletter-subscription"
+import { Metadata } from "next"
+import { notFound } from "next/navigation"
+import { ArticleStructuredData } from "@/components/structured-data"
 
 // Make this page dynamic to fetch data from Supabase at request time
 export const dynamic = 'force-dynamic'
@@ -32,6 +35,110 @@ interface RelatedPost {
   image: string;
   date: string;
   slug: string;
+}
+
+// Generate metadata for SEO
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const params = await props.params;
+
+  try {
+    const supabase = createClient();
+
+    // Fetch blog post by slug
+    const { data: postData, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("slug", params.slug)
+      .eq("published", true)
+      .single();
+
+    if (error || !postData) {
+      // Fallback to dummy data
+      const dummyBlogPosts = [
+        {
+          title: "كيفية حماية مؤسستك من هجمات التصيد الاحتيالي",
+          excerpt: "تعرف على أحدث التقنيات والاستراتيجيات لحماية مؤسستك من هجمات التصيد الاحتيالي المتطورة وكيفية تدريب الموظفين على التعرف على هذه الهجمات وتجنبها.",
+          slug: "protect-from-phishing",
+          featured_image: "/placeholder-blog-1.jpg"
+        }
+      ];
+
+      const dummyPost = dummyBlogPosts.find(post => post.slug === params.slug) || dummyBlogPosts[0];
+
+      return {
+        title: dummyPost.title,
+        description: dummyPost.excerpt,
+        openGraph: {
+          title: dummyPost.title,
+          description: dummyPost.excerpt,
+          type: 'article',
+          url: `https://phishsimulator.com/blog/${params.slug}`,
+          images: [
+            {
+              url: dummyPost.featured_image,
+              width: 1200,
+              height: 630,
+              alt: dummyPost.title,
+            },
+          ],
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: dummyPost.title,
+          description: dummyPost.excerpt,
+          images: [dummyPost.featured_image],
+        },
+        alternates: {
+          canonical: `https://phishsimulator.com/blog/${params.slug}`,
+        },
+      };
+    }
+
+    const title = postData.title || "مقال - Phish Simulator";
+    const description = postData.excerpt || (postData.content ? postData.content.substring(0, 160) + "..." : "مقال في مدونة Phish Simulator حول الأمن السيبراني");
+    const image = postData.featured_image || "/phishsim_logo.png";
+
+    return {
+      title,
+      description,
+      keywords: ["الأمن السيبراني", "التصيد الاحتيالي", "حماية المؤسسات", "مدونة الأمان", postData.title],
+      openGraph: {
+        title,
+        description,
+        type: 'article',
+        url: `https://phishsimulator.com/blog/${params.slug}`,
+        images: [
+          {
+            url: image,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+        publishedTime: postData.published_at,
+        modifiedTime: postData.updated_at,
+        authors: ['Phish Simulator Team'],
+        section: 'الأمن السيبراني',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [image],
+      },
+      alternates: {
+        canonical: `https://phishsimulator.com/blog/${params.slug}`,
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: "مقال - Phish Simulator",
+      description: "مقال في مدونة Phish Simulator حول الأمن السيبراني وحماية المؤسسات من التهديدات الرقمية",
+    };
+  }
 }
 
 export default async function BlogPostPage(
@@ -189,6 +296,14 @@ export default async function BlogPostPage(
 
   return (
     <div className="flex min-h-screen flex-col bg-white" dir="rtl">
+      <ArticleStructuredData
+        headline={post.title}
+        description={post.excerpt || post.content.replace(/<[^>]*>/g, '').substring(0, 160)}
+        url={`https://phishsimulator.com/blog/${post.slug}`}
+        image={post.image}
+        datePublished={post.date}
+        author={post.author}
+      />
       <Header />
 
       {/* Hero Section */}

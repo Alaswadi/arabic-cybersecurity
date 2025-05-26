@@ -7,6 +7,36 @@ import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "المدونة - مقالات الأمن السيبراني",
+  description: "اكتشف أحدث المقالات والنصائح في مجال الأمن السيبراني وحماية المؤسسات من التهديدات الرقمية. مقالات متخصصة من خبراء الأمن السيبراني.",
+  keywords: ["مدونة الأمن السيبراني", "مقالات الأمان", "نصائح الحماية", "التصيد الاحتيالي", "الهجمات السيبرانية"],
+  openGraph: {
+    title: "المدونة - مقالات الأمن السيبراني | Phish Simulator",
+    description: "اكتشف أحدث المقالات والنصائح في مجال الأمن السيبراني وحماية المؤسسات من التهديدات الرقمية.",
+    type: 'website',
+    url: 'https://phishsimulator.com/blog',
+    images: [
+      {
+        url: '/phishsim_logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'مدونة Phish Simulator للأمن السيبراني',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "المدونة - مقالات الأمن السيبراني | Phish Simulator",
+    description: "اكتشف أحدث المقالات والنصائح في مجال الأمن السيبراني وحماية المؤسسات من التهديدات الرقمية.",
+    images: ['/phishsim_logo.png'],
+  },
+  alternates: {
+    canonical: 'https://phishsimulator.com/blog',
+  },
+}
 
 // Make this page dynamic to fetch data from Supabase at request time
 export const dynamic = 'force-dynamic'

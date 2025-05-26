@@ -1,0 +1,29 @@
+# Robots.txt for Phish Simulator
+# https://phishsimulator.com
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /_next/
+Disallow: /build/
+
+# Allow specific API endpoints for SEO
+Allow: /api/sitemap
+
+# Crawl-delay for better server performance
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://phishsimulator.com/sitemap.xml
+
+# Block common bots that don't respect robots.txt
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

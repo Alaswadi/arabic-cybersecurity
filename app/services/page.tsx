@@ -10,6 +10,36 @@ import { NavButton } from "@/components/ui/nav-button"
 import { createClient } from "@/lib/supabase/server"
 import { StorageImage } from "@/components/ui/storage-image"
 import { FallbackImage } from "@/components/ui/fallback-image"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "خدماتنا - حلول الأمن السيبراني المتكاملة",
+  description: "اكتشف مجموعة شاملة من خدمات الأمن السيبراني المتخصصة لحماية مؤسستك من التهديدات الرقمية. تقييم المخاطر، تدريب الموظفين، وحلول الحماية المتقدمة.",
+  keywords: ["خدمات الأمن السيبراني", "تقييم المخاطر", "تدريب الموظفين", "حماية المؤسسات", "الأمان الرقمي"],
+  openGraph: {
+    title: "خدماتنا - حلول الأمن السيبراني المتكاملة | Phish Simulator",
+    description: "اكتشف مجموعة شاملة من خدمات الأمن السيبراني المتخصصة لحماية مؤسستك من التهديدات الرقمية.",
+    type: 'website',
+    url: 'https://phishsimulator.com/services',
+    images: [
+      {
+        url: '/phishsim_logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'خدمات Phish Simulator للأمن السيبراني',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "خدماتنا - حلول الأمن السيبراني المتكاملة | Phish Simulator",
+    description: "اكتشف مجموعة شاملة من خدمات الأمن السيبراني المتخصصة لحماية مؤسستك من التهديدات الرقمية.",
+    images: ['/phishsim_logo.png'],
+  },
+  alternates: {
+    canonical: 'https://phishsimulator.com/services',
+  },
+}
 
 // Make this page dynamic to fetch data from Supabase at request time
 export const dynamic = 'force-dynamic'
